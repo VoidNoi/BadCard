@@ -50,6 +50,7 @@ You can place your payloads inside the `/BadCard` folder on your SD card (It wil
 OR
 <br/>
 You can make your own payloads in your cardputer with the <strong>"NEW FILE"</strong> option 
+<br/>
 Your files should use the `.txt` extension.
 
 ## File creating controls
@@ -58,7 +59,7 @@ Your files should use the `.txt` extension.
     You can navigate your file pressing <code>fn</code> and the <code>up</code> or <code>down</code> keys (aka <code>;</code> or <code>.</code>)
   </li>
   <li>
-    When you're finished creating your file press <code>fn</code> and <code>esc</code>, add the name of your file and press enter (you don't need to add the `.txt` extension)
+    When you're finished creating your file press <code>fn</code> and <code>esc</code>, add the name of your file and press enter (you don't need to add the <code>.txt</code> extension)
   </li>
 </ul>
 
