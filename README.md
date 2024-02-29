@@ -55,10 +55,10 @@ Your files should use the `.txt` extension.
 ## File creating controls
 <ul>
   <li>
-    You can navigate your file pressing the <code>fn</code> button and the <code>up</code> or <code>down</code> keys (aka <code>;</code> or <code>.</code>)
+    You can navigate your file pressing <code>fn</code> and the <code>up</code> or <code>down</code> keys (aka <code>;</code> or <code>.</code>)
   </li>
   <li>
-    When you're finished creating your file press the <code>fn</code> button and <code>esc</code>, add the name of your file and press enter (you don't need to add the `.txt` extension)
+    When you're finished creating your file press <code>fn</code> and <code>esc</code>, add the name of your file and press enter (you don't need to add the `.txt` extension)
   </li>
 </ul>
 
