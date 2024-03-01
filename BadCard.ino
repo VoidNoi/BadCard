@@ -1,6 +1,7 @@
 #include <SD.h>
 #include "USB.h"
 #include "USBHIDKeyboard.h"
+USBHIDKeyboard Keyboard;
 #include <SPI.h>
 
 #include "M5Cardputer.h"
@@ -8,7 +9,14 @@
 #define display M5Cardputer.Display
 #define kb M5Cardputer.Keyboard
 
-USBHIDKeyboard Keyboard;
+#define KEY_MENU          0xED
+#define KEY_PAUSE         0xD0
+#define KEY_NUMLOCK       0xDB
+#define KEY_PRINTSCREEN   0xCE
+#define KEY_SCROLLLOCK    0xCF
+#define KEY_SPACE         0xB4
+#define KEY_BACKSPACE     0xB2
+#define KEY_DOWN_ARROW    0xD9
 
 File myFile;
 String root = "/BadCard";
@@ -222,7 +230,7 @@ void processLine(String line) {
   } else {  // Has a space -> (2)
     command = line.substring(0, space);   // Get chars in line from start to space position
     payload = line.substring(space + 1);  // Get chars in line from after space position to EOL
-    
+
     if (
       command == "DELAY" ||
       command == "STRING" ||
@@ -256,10 +264,10 @@ void processLine(String line) {
         processCommand(remaining);                      // Pop command from remaining commands
         remaining = "";                                 // Clear commands (end of loop)
       }
-    }
-    } else {
-        // Invalid command
-    }
+    } 
+  }  else {
+    // Invalid command
+  }
 
   Keyboard.releaseAll();
 }
@@ -270,9 +278,10 @@ void processCommand(String command) {
    * (see https://www.arduino.cc/en/Reference/KeyboardModifiers or
    *      http://www.usb.org/developers/hidpage/Hut1_12v2.pdf#page=53)
    */
-  
-  if (command.length() == 1) {     // Process key (used for example for WIN L command)
-    char c = (char) command[0];  // Convert string (1-char length) to char      Keyboard.press(c);           // Press the key onkeyboard
+  if (command.length() == 1) { 
+        // Process key (used for example for WIN L command)
+    char c = (char) command[0];  // Convert string (1-char length) to char      
+    Keyboard.press(c);           // Press the key onkeyboard
   } else if (command == "ENTER") {
     Keyboard.press(KEY_RETURN);
   } else if (command == "MENU" || command == "APP") {
@@ -300,15 +309,15 @@ void processCommand(String command) {
   } else if (command == "INSERT") {
     Keyboard.press(KEY_INSERT);
   } else if (command == "NUMLOCK") {
-    Keyboard.press(KEY_NUM_LOCK);
+    Keyboard.press(KEY_NUMLOCK);
   } else if (command == "PAGEUP") {
     Keyboard.press(KEY_PAGE_UP);
   } else if (command == "PAGEDOWN") {
     Keyboard.press(KEY_PAGE_DOWN);
   } else if (command == "PRINTSCREEN") {
-    Keyboard.press(KEY_PRINT_SCREEN);
+    Keyboard.press(KEY_PRINTSCREEN);
   } else if (command == "SCROLLLOCK") {
-    Keyboard.press(KEY_SCROLL_LOCK);
+    Keyboard.press(KEY_SCROLLLOCK);
   } else if (command == "SPACE") {
     Keyboard.press(KEY_SPACE);
   } else if (command == "BACKSPACE") {
@@ -474,9 +483,9 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-
-  display.setCursor(display.width()/2 - 70, display.height()/2 - 50);
-  display.println("BadCard v1.0");
+  String BCVersion = "BadCard v1.0.1";
+  display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
+  display.println(BCVersion);
 
   display.setTextSize(1);
   display.setCursor(display.width()/2 - 90, display.height()/2 - 25);
