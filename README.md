@@ -44,14 +44,17 @@ Ducky Script processing and executing ported from [arducky](https://github.com/C
   
 </details>
 
+<strong>If you're having trouble executing your payloads on Windows 11 try adding a <code>DELAY 500</code> at the end of your payload https://github.com/VoidNoi/BadCard/issues/1#issuecomment-2000571655</strong>
+
 ## How to use
+Your files should use the `.txt` extension.
+<br/>
 You can place your payloads inside the `/BadCard` folder on your SD card (It will be created automatically after installing BadCard)
 <br/>
 OR
 <br/>
 You can make your own payloads in your cardputer with the <strong>"NEW FILE"</strong> option 
 <br/>
-Your files should use the `.txt` extension.
 
 ## File creating controls
 <ul>
