@@ -156,6 +156,7 @@ void executeScript() {
     } 
       // End control over keyboard
       Keyboard.end();
+      mainMenu();
     } 
 }
 
@@ -483,7 +484,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.0.1";
+  String BCVersion = "BadCard v1.0.2";
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
 
