@@ -3,7 +3,6 @@
 #include "USBHIDKeyboard.h"
 USBHIDKeyboard Keyboard;
 #include <SPI.h>
-
 #include "M5Cardputer.h"
 
 #define display M5Cardputer.Display
@@ -37,7 +36,7 @@ int cursorPosX, cursorPosY, screenPosX, screenPosY = 0;
 
 int newFileLines = 0;
 
-int letterHeight = 16.6;
+int letterHeight = 16;
 int letterWidth = 12;
 
 String cursor = "|";
@@ -361,10 +360,19 @@ void processCommand(String command) {
 }
 
 void insertLine(String file[], int y){
-  for (int i = sizeof(file)-1;i>y;i--){
+  for (int i = newFileLines; i > y; i--){
     file[i] = file[i-1];
   }
   file[y] = '\0';
+}
+
+void insertChar(String file[], int y, int x, char letter){
+  if (cursorPosX >= file[y].length()) {
+    file[y] += letter;
+  } else {
+    String modLine = file[y].substring(0,x-1) + letter + file[y].substring(x-1,file[y].length());
+    file[y] = modLine;
+  }
 }
 
 void removeLine(String file[], int y){
@@ -384,8 +392,6 @@ void cleanNewFile() {
   cursorPosY = 0;
   screenPosX = 0;
   screenPosY = 0;
-  cursorPosX = 0;
-  cursorPosY = 0;
   newFileLines = 0;
 }
 
@@ -455,7 +461,6 @@ void scriptOptions() {
 void scriptMenu() {
   char optionsList[2][20] = {"Execute script", "Delete script"};
     
-  //display.fillScreen(BLACK);
   for (int i = 0; i < 2; i++) {
     display.setCursor(20,i*20);
     display.println(optionsList[i]);
@@ -484,7 +489,8 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.0.2";
+  String BCVersion = "BadCard v1.1.0";
+
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
 
@@ -570,47 +576,65 @@ void loop() {
     if (kb.isChange()) {
       if (kb.isPressed()) {
         Keyboard_Class::KeysState status = kb.keysState();
-        
+        int prevCursorY;
+
         if (status.fn && kb.isKeyPressed('`')) {
           creatingFile = false;
           saveFile = true;
           
         } else if (status.fn && kb.isKeyPressed(';') && cursorPosY > 0){
+          prevCursorY = cursorPosY;
           cursorPosY--;
-
-          if (fileText[cursorPosY].length() * letterWidth > display.width()) {
-            screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
-          } else {
-            screenPosX = 0;
+          if (cursorPosX >= fileText[prevCursorY].length()) {
+            cursorPosX = fileText[cursorPosY].length();
           }
-
           if (screenPosY > 0 && cursorPosY > 0) {
             screenPosY--;
           }
+          if (cursorPosX * letterWidth > display.width()) {
+            screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
+        } else {
+          screenPosX = 0;
+        }
 
         } else if (status.fn && kb.isKeyPressed('.') && cursorPosY < newFileLines) {
+          prevCursorY = cursorPosY;
           cursorPosY++;
-
-          if (fileText[cursorPosY].length() * letterWidth > display.width()) {
+          if (cursorPosX >= fileText[prevCursorY].length()) {
+            cursorPosX = fileText[cursorPosY].length();
+          }
+          if (cursorPosY * letterHeight >= display.height() - letterHeight) {
+            screenPosY++;
+          }
+          if (cursorPosX * letterWidth > display.width()) {
             screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
           } else {
             screenPosX = 0;
           }
 
-          if (cursorPosY * letterHeight >= display.height() - letterHeight) {
-            screenPosY++;
+        } else if (status.fn && kb.isKeyPressed(',') && cursorPosX > 0) {
+          cursorPosX--;
+          if (screenPosX < 0) {
+            screenPosX += letterWidth;
           }
 
-        } else {
+        } else if (status.fn && kb.isKeyPressed('/') && cursorPosX < fileText[cursorPosY].length() ) {
+          cursorPosX++;
+          if (cursorPosX * letterWidth >= display.width()) {
+            screenPosX -= letterWidth;
+          }
+
+        } else if (!status.fn) {
           for (auto i : status.word) {
 
-            if ((fileText[cursorPosY].length() + 1) * letterWidth >= display.width()) {
+            if (cursorPosX * letterWidth >= display.width() - letterWidth) {
               screenPosX -= letterWidth;
             }
-            cursorPosX += 12;
+            cursorPosX++;
 
-            fileText[cursorPosY] += i;
+            insertChar(fileText, cursorPosY, cursorPosX, i);
           }
+          
         }
 
         if (status.del) {
@@ -618,7 +642,9 @@ void loop() {
           if (screenPosX < 0) {
             screenPosX += letterWidth;
           }
-          cursorPosX -= 12;
+          if (cursorPosX > 0) {
+            cursorPosX--;
+          }
 
           if (fileText[cursorPosY].length() <= 0 && cursorPosY > 0) {
             removeLine(fileText, cursorPosY);
@@ -628,7 +654,7 @@ void loop() {
               screenPosX = 0;
             }
           } else {
-            fileText[cursorPosY].remove(fileText[cursorPosY].length()-1);
+            fileText[cursorPosY].remove(cursorPosX,1);
           }
         }
 
@@ -645,21 +671,26 @@ void loop() {
           cursorPosX = 0;
         }
 
+        if (cursorPosX > fileText[cursorPosY].length()) {
+          cursorPosX = fileText[cursorPosY].length();
+        }
+
         display.fillScreen(BLACK);
 
         display.setTextSize(1.5);
 
-        int drawCursorX = fileText[cursorPosY].length() * letterWidth;
-        int drawCursorY = cursorPosY*letterHeight - 5;
+        int drawCursorX = cursorPosX * letterWidth;
+        int drawCursorY = cursorPosY * letterHeight - 5;
 
-        if ((fileText[cursorPosY].length() + 1) * letterWidth >= display.width()) {
+        if (cursorPosX * letterWidth > display.width() - letterWidth) {
           drawCursorX = display.width() - letterWidth;
         }
 
-        if (cursorPosY * letterHeight > display.height()-letterHeight) {
+        if (cursorPosY * letterHeight > display.height() - letterHeight) {
           drawCursorY = (display.height() - letterHeight) - 10;
         }
-        display.drawString(cursor, drawCursorX, drawCursorY, &fonts::Font2);
+
+        display.drawString(cursor, drawCursorX - 3, drawCursorY, &fonts::Font2);
         
         display.setTextSize(2);
 
