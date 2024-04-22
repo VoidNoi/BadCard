@@ -1,21 +1,19 @@
 #include <SD.h>
+
 #include "USB.h"
-#include "USBHIDKeyboard.h"
+#include "src/USBHID-Keyboard/USBHIDKeyboard.h"
 USBHIDKeyboard Keyboard;
+#include "keys.h"
+
+// https://github.com/T-vK/ESP32-BLE-Keyboard
+#include "src/BLE-Keyboard/BleKeyboard.h"
+BleKeyboard BLEKeyboard("GoodCard :)", "VoidNoi", 100);
+
 #include <SPI.h>
 #include "M5Cardputer.h"
 
 #define display M5Cardputer.Display
 #define kb M5Cardputer.Keyboard
-
-#define KEY_MENU          0xED
-#define KEY_PAUSE         0xD0
-#define KEY_NUMLOCK       0xDB
-#define KEY_PRINTSCREEN   0xCE
-#define KEY_SCROLLLOCK    0xCF
-#define KEY_SPACE         0xB4
-#define KEY_BACKSPACE     0xB2
-#define KEY_DOWN_ARROW    0xD9
 
 File myFile;
 String root = "/BadCard";
@@ -27,7 +25,7 @@ int scriptCursor = 0;
 
 const int maxFiles = 50;
 
-String sdFiles[maxFiles] = {"NEW SCRIPT"};
+String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE"};
 
 const int ELEMENT_COUNT_MAX = 500;
 String fileText[ELEMENT_COUNT_MAX];
@@ -45,9 +43,10 @@ String fileName;
 
 bool creatingFile = false;
 bool saveFile = false;
+bool isBLE = false;
 
 void getDirectory() {
-  fileAmount = 1;
+  fileAmount = 2;
   File dir = SD.open(root);
 
   while (true) {
@@ -123,8 +122,12 @@ void executeScript() {
   String fileName = root + "/" + sdFiles[mainCursor];
 
   if (SD.exists(fileName)) {
-    Keyboard.begin();
-    USB.begin();
+    
+    if (!isBLE) {
+      USB.begin();
+      Keyboard.begin();
+    }
+    
     display.println(fileName);
 
     // Open the file for reading (fill myFile with char buffer)
@@ -133,7 +136,6 @@ void executeScript() {
     // Check if the file has successfully been opened and continue
     if (myFile) {
       // Initialize control over keyboard
-      Keyboard.begin();
         
       // Process lines from file with LF EOL (0x0a), not CR+LF (0x0a+0x0d)
       String line = "";
@@ -154,7 +156,11 @@ void executeScript() {
       myFile.close();
     } 
       // End control over keyboard
-      Keyboard.end();
+      if (isBLE) {
+        BLEKeyboard.end();
+      } else {
+        Keyboard.end();
+      }
       mainMenu();
     } 
 }
@@ -250,8 +256,12 @@ void processLine(String line) {
     processCommand(command);                                // Process command
   } else if (command == "DELAY") {                            // Delay before the next commande
     delay((int) payload.toInt());                           // Convert payload to integer and make pause for 'payload' time
-  } else if (command == "STRING") {                           // String processing
-    Keyboard.print(payload);                                // Type-in the payload
+  } else if (command == "STRING") { 
+    if (isBLE) {
+      BLEKeyboard.print(payload);
+    } else {
+      Keyboard.print(payload);                                // Type-in the payload
+    }                          // String processing
   } else if (command == "REM") {                              // Comment
   } else if (command != "") {                                 // Command from (2)
     String remaining = line;                                // Prepare commands to run
@@ -269,7 +279,19 @@ void processLine(String line) {
     // Invalid command
   }
 
-  Keyboard.releaseAll();
+  if (isBLE) {
+    BLEKeyboard.releaseAll();
+  } else {
+    Keyboard.releaseAll();
+  }
+}
+
+void keyboardPress(uint8_t key) {
+  if (isBLE) {
+    BLEKeyboard.press(key);
+  } else {
+    Keyboard.press(key);
+  }
 }
 
 void processCommand(String command) {
@@ -278,84 +300,85 @@ void processCommand(String command) {
    * (see https://www.arduino.cc/en/Reference/KeyboardModifiers or
    *      http://www.usb.org/developers/hidpage/Hut1_12v2.pdf#page=53)
    */
+
   if (command.length() == 1) { 
         // Process key (used for example for WIN L command)
     char c = (char) command[0];  // Convert string (1-char length) to char      
-    Keyboard.press(c);           // Press the key onkeyboard
+    keyboardPress(c);           // Press the key onkeyboard
   } else if (command == "ENTER") {
-    Keyboard.press(KEY_RETURN);
+    keyboardPress(KEY_RETURN);
   } else if (command == "MENU" || command == "APP") {
-    Keyboard.press(KEY_MENU);
+    keyboardPress(KEY_MENU);
   } else if (command == "DOWNARROW" || command == "DOWN") {
-    Keyboard.press(KEY_DOWN_ARROW);
+    keyboardPress(KEY_DOWN_ARROW);
   } else if (command == "LEFTARROW" || command == "LEFT") {
-    Keyboard.press(KEY_LEFT_ARROW);
+    keyboardPress(KEY_LEFT_ARROW);
   } else if (command == "RIGHTARROW" || command == "RIGHT") {
-    Keyboard.press(KEY_RIGHT_ARROW);
+    keyboardPress(KEY_RIGHT_ARROW);
   } else if (command == "UPARROW" || command == "UP") {
-    Keyboard.press(KEY_UP_ARROW);
+    keyboardPress(KEY_UP_ARROW);
   } else if (command == "BREAK" || command == "PAUSE") {
-    Keyboard.press(KEY_PAUSE);
+    keyboardPress(KEY_PAUSE);
   } else if (command == "CAPSLOCK") {
-    Keyboard.press(KEY_CAPS_LOCK);
+    keyboardPress(KEY_CAPS_LOCK);
   } else if (command == "DELETE" || command == "DEL") {
-    Keyboard.press(KEY_DELETE);
+    keyboardPress(KEY_DELETE);
   } else if (command == "END") {
-    Keyboard.press(KEY_END);
+    keyboardPress(KEY_END);
   } else if (command == "ESC" || command == "ESCAPE") {
-    Keyboard.press(KEY_ESC);
+    keyboardPress(KEY_ESC);
   } else if (command == "HOME") {
-    Keyboard.press(KEY_HOME);
+    keyboardPress(KEY_HOME);
   } else if (command == "INSERT") {
-    Keyboard.press(KEY_INSERT);
+    keyboardPress(KEY_INSERT);
   } else if (command == "NUMLOCK") {
-    Keyboard.press(KEY_NUMLOCK);
+    keyboardPress(KEY_NUMLOCK);
   } else if (command == "PAGEUP") {
-    Keyboard.press(KEY_PAGE_UP);
+    keyboardPress(KEY_PAGE_UP);
   } else if (command == "PAGEDOWN") {
-    Keyboard.press(KEY_PAGE_DOWN);
+    keyboardPress(KEY_PAGE_DOWN);
   } else if (command == "PRINTSCREEN") {
-    Keyboard.press(KEY_PRINTSCREEN);
+    keyboardPress(KEY_PRINTSCREEN);
   } else if (command == "SCROLLLOCK") {
-    Keyboard.press(KEY_SCROLLLOCK);
+    keyboardPress(KEY_SCROLLLOCK);
   } else if (command == "SPACE") {
-    Keyboard.press(KEY_SPACE);
+    keyboardPress(KEY_SPACE);
   } else if (command == "BACKSPACE") {
-    Keyboard.press(KEY_BACKSPACE);
+    keyboardPress(KEY_BACKSPACE);
   } else if (command == "TAB") {
-    Keyboard.press(KEY_TAB);
+    keyboardPress(KEY_TAB);
   } else if (command == "GUI" || command == "WINDOWS") {
-    Keyboard.press(KEY_LEFT_GUI);
+    keyboardPress(KEY_LEFT_GUI);
   } else if (command == "SHIFT") {
-    Keyboard.press(KEY_RIGHT_SHIFT);
+    keyboardPress(KEY_RIGHT_SHIFT);
   } else if (command == "ALT") {
-    Keyboard.press(KEY_LEFT_ALT);
+    keyboardPress(KEY_LEFT_ALT);
   } else if (command == "CTRL" || command == "CONTROL") {
-    Keyboard.press(KEY_LEFT_CTRL);
+    keyboardPress(KEY_LEFT_CTRL);
   } else if (command == "F1" || command == "FUNCTION1") {
-    Keyboard.press(KEY_F1);
+    keyboardPress(KEY_F1);
   } else if (command == "F2" || command == "FUNCTION2") {
-    Keyboard.press(KEY_F2);
+    keyboardPress(KEY_F2);
   } else if (command == "F3" || command == "FUNCTION3") {
-    Keyboard.press(KEY_F3);
+    keyboardPress(KEY_F3);
   } else if (command == "F4" || command == "FUNCTION4") {
-    Keyboard.press(KEY_F4);
+    keyboardPress(KEY_F4);
   } else if (command == "F5" || command == "FUNCTION5") {
-    Keyboard.press(KEY_F5);
+    keyboardPress(KEY_F5);
   } else if (command == "F6" || command == "FUNCTION6") {
-    Keyboard.press(KEY_F6);
+    keyboardPress(KEY_F6);
   } else if (command == "F7" || command == "FUNCTION7") {
-    Keyboard.press(KEY_F7);
+    keyboardPress(KEY_F7);
   } else if (command == "F8" || command == "FUNCTION8") {
-    Keyboard.press(KEY_F8);
+    keyboardPress(KEY_F8);
   } else if (command == "F9" || command == "FUNCTION9") {
-    Keyboard.press(KEY_F9);
+    keyboardPress(KEY_F9);
   } else if (command == "F10" || command == "FUNCTION10") {
-    Keyboard.press(KEY_F10);
+    keyboardPress(KEY_F10);
   } else if (command == "F11" || command == "FUNCTION11") {
-    Keyboard.press(KEY_F11);
+    keyboardPress(KEY_F11);
   } else if (command == "F12" || command == "FUNCTION12") {
-    Keyboard.press(KEY_F12);
+    keyboardPress(KEY_F12);
   }
 }
 
@@ -470,7 +493,19 @@ void scriptMenu() {
 void mainOptions() {
   if (mainCursor == 0) {
     newFile(); 
-  } else {
+  } else if (mainCursor == 1) {
+    display.fillScreen(BLACK);
+    if (!isBLE) {
+      isBLE = true;
+      BLEKeyboard.begin();
+      sdFiles[1] = "BLE ACTIVATED";
+    } else {
+      isBLE = false;
+      sdFiles[1] = "ACTIVATE BLE";
+    }
+    mainMenu();
+  }
+   else {
     handleMenus(1, &scriptOptions, scriptCursor, &scriptMenu);
   }
 }
@@ -489,7 +524,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.1.0";
+  String BCVersion = "BadCard v1.2.0";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
