@@ -67,7 +67,7 @@ You can make your own payloads in your cardputer with the <strong>"NEW FILE"</st
 ## TO DO
 <ul>
   <li>
-    File editing function
+    File editing function - Done [GuidoAguiar](https://github.com/guidoaguiar)
   </li>
   <li>
     Bluetooth connection support
