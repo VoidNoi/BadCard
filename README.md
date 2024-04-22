@@ -63,8 +63,10 @@ You can make your own payloads in your cardputer with the <strong>"NEW FILE"</st
     When you're finished creating your file press <code>fn</code> and <code>esc</code>, add the name of your file and press enter (you don't need to add the <code>.txt</code> extension)
   </li>
 </ul>
+
 ## NEW
   File editing function
+  
 ## TO DO
 <ul>
   <li>
