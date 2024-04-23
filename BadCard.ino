@@ -837,7 +837,7 @@ void loop()
     }
   }
 
-  if (creatingFile)
+  if (creatingFile || editingFile)
   {
     if (kb.isChange())
     {
@@ -848,8 +848,16 @@ void loop()
 
         if (status.fn && kb.isKeyPressed('`'))
         {
-          creatingFile = false;
-          saveFile = true;
+          if (creatingFile)
+          {
+            creatingFile = false;
+            saveFile = true;
+          }
+          if (editingFile)
+          {
+            editingFile = false;
+            saveEditFile = true;
+          }
         }
         else if (status.fn && kb.isKeyPressed(';') && cursorPosY > 0)
         {
@@ -926,206 +934,36 @@ void loop()
 
         if (status.del)
         {
-
-          if (screenPosX < 0)
-          {
-            screenPosX += letterWidth;
-          }
           if (cursorPosX > 0)
           {
             cursorPosX--;
-          }
-
-          if (fileText[cursorPosY].length() <= 0 && cursorPosY > 0)
-          {
-            removeLine(fileText, cursorPosY);
-            if (fileText[cursorPosY].length() * letterWidth > display.width())
-            {
-              screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
-            }
-            else
-            {
-              screenPosX = 0;
-            }
-          }
-          else
-          {
             fileText[cursorPosY].remove(cursorPosX, 1);
+          }
+          else if (cursorPosY > 0)
+          {
+            // Move the entire line up to the end of the line above
+            fileText[cursorPosY - 1] += fileText[cursorPosY];
+            removeLine(fileText, cursorPosY);
+            cursorPosY--;
+            cursorPosX = fileText[cursorPosY].length();
+          }
+          else if (cursorPosY == 0 && cursorPosX == 0)
+          {
+            // Do nothing
           }
         }
 
         if (status.enter)
         {
+          String currentLine = fileText[cursorPosY];
+          String remainingLine = currentLine.substring(cursorPosX);
+          currentLine = currentLine.substring(0, cursorPosX);
+
+          fileText[cursorPosY] = currentLine;
           newFileLines++;
           cursorPosY++;
-
           insertLine(fileText, cursorPosY);
-
-          if (cursorPosY * letterHeight >= display.height() - letterHeight)
-          {
-            screenPosY++;
-          }
-          screenPosX = 0;
-          cursorPosX = 0;
-        }
-
-        if (cursorPosX > fileText[cursorPosY].length())
-        {
-          cursorPosX = fileText[cursorPosY].length();
-        }
-
-        display.fillScreen(BLACK);
-
-        display.setTextSize(1.5);
-
-        int drawCursorX = cursorPosX * letterWidth;
-        int drawCursorY = cursorPosY * letterHeight - 5;
-
-        if (cursorPosX * letterWidth > display.width() - letterWidth)
-        {
-          drawCursorX = display.width() - letterWidth;
-        }
-
-        if (cursorPosY * letterHeight > display.height() - letterHeight)
-        {
-          drawCursorY = (display.height() - letterHeight) - 10;
-        }
-
-        display.drawString(cursor, drawCursorX - 3, drawCursorY, &fonts::Font2);
-
-        display.setTextSize(2);
-
-        for (int i = 0; i <= newFileLines; i++)
-        {
-          display.drawString(fileText[i + screenPosY], screenPosX, i * letterHeight);
-        }
-      }
-    }
-  }
-
-  if (editingFile)
-  {
-    if (kb.isChange())
-    {
-      if (kb.isPressed())
-      {
-        Keyboard_Class::KeysState status = kb.keysState();
-        int prevCursorY;
-
-        if (status.fn && kb.isKeyPressed('`'))
-        {
-          editingFile = false;
-          saveEditFile = true;
-        }
-        else if (status.fn && kb.isKeyPressed(';') && cursorPosY > 0)
-        {
-          prevCursorY = cursorPosY;
-          cursorPosY--;
-          if (cursorPosX >= fileText[prevCursorY].length())
-          {
-            cursorPosX = fileText[cursorPosY].length();
-          }
-          if (screenPosY > 0 && cursorPosY > 0)
-          {
-            screenPosY--;
-          }
-          if (cursorPosX * letterWidth > display.width())
-          {
-            screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
-          }
-          else
-          {
-            screenPosX = 0;
-          }
-        }
-        else if (status.fn && kb.isKeyPressed('.') && cursorPosY < newFileLines)
-        {
-          prevCursorY = cursorPosY;
-          cursorPosY++;
-          if (cursorPosX >= fileText[prevCursorY].length())
-          {
-            cursorPosX = fileText[cursorPosY].length();
-          }
-          if (cursorPosY * letterHeight >= display.height() - letterHeight)
-          {
-            screenPosY++;
-          }
-          if (cursorPosX * letterWidth > display.width())
-          {
-            screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
-          }
-          else
-          {
-            screenPosX = 0;
-          }
-        }
-        else if (status.fn && kb.isKeyPressed(',') && cursorPosX > 0)
-        {
-          cursorPosX--;
-          if (screenPosX < 0)
-          {
-            screenPosX += letterWidth;
-          }
-        }
-        else if (status.fn && kb.isKeyPressed('/') && cursorPosX < fileText[cursorPosY].length())
-        {
-          cursorPosX++;
-          if (cursorPosX * letterWidth >= display.width())
-          {
-            screenPosX -= letterWidth;
-          }
-        }
-        else if (!status.fn)
-        {
-          for (auto i : status.word)
-          {
-
-            if (cursorPosX * letterWidth >= display.width() - letterWidth)
-            {
-              screenPosX -= letterWidth;
-            }
-            cursorPosX++;
-
-            insertChar(fileText, cursorPosY, cursorPosX, i);
-          }
-        }
-
-        if (status.del)
-        {
-
-          if (screenPosX < 0)
-          {
-            screenPosX += letterWidth;
-          }
-          if (cursorPosX > 0)
-          {
-            cursorPosX--;
-          }
-
-          if (fileText[cursorPosY].length() <= 0 && cursorPosY > 0)
-          {
-            removeLine(fileText, cursorPosY);
-            if (fileText[cursorPosY].length() * letterWidth > display.width())
-            {
-              screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
-            }
-            else
-            {
-              screenPosX = 0;
-            }
-          }
-          else
-          {
-            fileText[cursorPosY].remove(cursorPosX, 1);
-          }
-        }
-
-        if (status.enter)
-        {
-          newFileLines++;
-          cursorPosY++;
-
-          insertLine(fileText, cursorPosY);
+          fileText[cursorPosY] = remainingLine;
 
           if (cursorPosY * letterHeight >= display.height() - letterHeight)
           {
