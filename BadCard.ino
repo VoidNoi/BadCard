@@ -594,7 +594,7 @@ void mainOptions() {
     mainMenu();
   }
    else {
-    handleMenus(1, &scriptOptions, scriptCursor, &scriptMenu);
+    handleMenus(2, &scriptOptions, scriptCursor, &scriptMenu);
   }
 }
 
