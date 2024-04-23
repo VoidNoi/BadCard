@@ -4,6 +4,21 @@ BadUSB for the Cardputer with ducky script support and extra functionality
 
 Ducky Script processing and executing ported from [arducky](https://github.com/Creased/arducky)
 
+## NEW FEATURES
+* Bluetooth connection
+* File editing (Thanks to [@guidoaguiar](https://github.com/guidoaguiar))
+* Horizontal file navigation
+
+<strong>If you're having trouble executing your payloads on Windows 11 try adding a <code>DELAY 500</code> at the end of your payload https://github.com/VoidNoi/BadCard/issues/1#issuecomment-2000571655</strong>
+
+## How to use
+You can place your payloads inside the `/BadCard` folder on your SD card (It will be created automatically after installing BadCard)
+<br/>
+Your files should use the `.txt` extension.
+
+OR
+
+You can make your own payloads in your cardputer with the <strong>"NEW FILE"</strong> option 
 <details>
   <summary>
     <strong>Available commands</strong>
@@ -43,26 +58,8 @@ Ducky Script processing and executing ported from [arducky](https://github.com/C
      - REM (+string)
   
 </details>
-<strong>If you're having trouble executing your payloads on Windows 11 try adding a <code>DELAY 500</code> at the end of your payload https://github.com/VoidNoi/BadCard/issues/1#issuecomment-2000571655</strong>
 
-## How to use
-Your files should use the `.txt` extension.
-<br/>
-You can place your payloads inside the `/BadCard` folder on your SD card (It will be created automatically after installing BadCard)
-<br/>
-OR
-<br/>
-You can make your own payloads in your cardputer with the <strong>"NEW FILE"</strong> option 
+## File creating/editing controls
 
-## File creating controls
-<ul>
-  <li>
-    You can navigate your file pressing <code>fn</code> and the <code>up</code>, <code>down</code>, <code>left</code> or <code>right</code> keys (aka <code>;</code>, <code>.</code>, <code>,</code> or <code>/</code>)
-  </li>
-  <li>
-    When you're finished creating your file press <code>fn</code> and <code>esc</code>, add the name of your file and press enter (you don't need to add the <code>.txt</code> extension)
-  </li>
-</ul>
-
-## NEW
-  File editing function
+* You can navigate your file pressing <code>fn</code> and the <code>up</code>, <code>down</code>, <code>left</code> or <code>right</code> keys (aka <code>;</code>, <code>.</code>, <code>,</code> or <code>/</code>)
+* When you're finished creating your file press <code>fn</code> and <code>esc</code>, add the name of your file and press enter (you don't need to add the <code>.txt</code> extension)
