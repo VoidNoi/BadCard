@@ -565,7 +565,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.3.1";
+  String BCVersion = "BadCard v1.3.2";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
@@ -676,7 +676,7 @@ void loop() {
           if (screenPosY > 0 && cursorPosY > 0) {
             screenPosY--;
           }
-          if (cursorPosX * letterWidth > display.width()) {
+          if (cursorPosX * letterWidth > display.width() && fileText[cursorPosY].length() * letterWidth > display.width()) {
             screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
           } else {
             screenPosX = 0;
@@ -690,7 +690,7 @@ void loop() {
           if (cursorPosY * letterHeight >= display.height() - letterHeight) {
             screenPosY++;
           }
-          if (cursorPosX * letterWidth > display.width()) {
+          if (cursorPosX * letterWidth > display.width() && fileText[cursorPosY].length() * letterWidth > display.width()) {
             screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
           } else {
             screenPosX = 0;
