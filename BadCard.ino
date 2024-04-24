@@ -565,7 +565,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.3.0";
+  String BCVersion = "BadCard v1.3.1";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
@@ -667,8 +667,7 @@ void loop() {
             editingFile = false;
             saveFile = true;
           }
-        }
-        else if (status.fn && kb.isKeyPressed(';') && cursorPosY > 0) {
+        } else if (status.fn && kb.isKeyPressed(';') && cursorPosY > 0) {
           prevCursorY = cursorPosY;
           cursorPosY--;
           if (cursorPosX >= fileText[prevCursorY].length()) {
@@ -679,12 +678,10 @@ void loop() {
           }
           if (cursorPosX * letterWidth > display.width()) {
             screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
-          }
-          else {
+          } else {
             screenPosX = 0;
           }
-        }
-        else if (status.fn && kb.isKeyPressed('.') && cursorPosY < newFileLines) {
+        } else if (status.fn && kb.isKeyPressed('.') && cursorPosY < newFileLines) {
           prevCursorY = cursorPosY;
           cursorPosY++;
           if (cursorPosX >= fileText[prevCursorY].length()) {
@@ -695,24 +692,20 @@ void loop() {
           }
           if (cursorPosX * letterWidth > display.width()) {
             screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
-          }
-          else {
+          } else {
             screenPosX = 0;
           }
-        }
-        else if (status.fn && kb.isKeyPressed(',') && cursorPosX > 0) {
+        } else if (status.fn && kb.isKeyPressed(',') && cursorPosX > 0) {
           cursorPosX--;
           if (screenPosX < 0) {
             screenPosX += letterWidth;
           }
-        }
-        else if (status.fn && kb.isKeyPressed('/') && cursorPosX < fileText[cursorPosY].length()) {
+        } else if (status.fn && kb.isKeyPressed('/') && cursorPosX < fileText[cursorPosY].length()) {
           cursorPosX++;
           if (cursorPosX * letterWidth >= display.width()) {
             screenPosX -= letterWidth;
           }
-        }
-        else if (!status.fn) {
+        } else if (!status.fn) {
           for (auto i : status.word) {
 
             if (cursorPosX * letterWidth >= display.width() - letterWidth) {
@@ -731,19 +724,17 @@ void loop() {
           if (cursorPosX > 0) {
             cursorPosX--;
             fileText[cursorPosY].remove(cursorPosX, 1);
-          }
-          else if (fileText[cursorPosY].length() <= 0 && cursorPosY > 0) {
-            // Move the entire line up to the end of the line above
-            fileText[cursorPosY - 1] += fileText[cursorPosY];
-            removeLine(fileText, cursorPosY);
-
-            if (fileText[cursorPosY].length() * letterWidth > display.width()) {
-              screenPosX = (fileText[cursorPosY].length() - 19) * -letterWidth;
+          } else if (cursorPosX <= 0 && cursorPosY > 0) {
+            
+            cursorPosX = fileText[cursorPosY-1].length(); // Set cursor at the end of the previous line
+            // Set screen position to where the previous line ends
+            if (fileText[cursorPosY-1].length() * letterWidth > display.width()) { 
+              screenPosX = (fileText[cursorPosY-1].length() - 19) * -letterWidth;
             } else {
               screenPosX = 0;
             }
-            cursorPosY--;
-            cursorPosX = fileText[cursorPosY].length();
+            fileText[cursorPosY - 1] += fileText[cursorPosY]; // Move the entire line up to the end of the line above
+            removeLine(fileText, cursorPosY);
           }
         }
 
@@ -758,8 +749,7 @@ void loop() {
           insertLine(fileText, cursorPosY);
           fileText[cursorPosY] = remainingLine;
 
-          if (cursorPosY * letterHeight >= display.height() - letterHeight)
-          {
+          if (cursorPosY * letterHeight >= display.height() - letterHeight) {
             screenPosY++;
           }
           screenPosX = 0;
