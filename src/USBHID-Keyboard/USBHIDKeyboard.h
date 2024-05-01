@@ -21,10 +21,13 @@
 
 #pragma once
 #include "Print.h"
-#include "USBHID.h"
+#include "./USBHID.h"
 #if CONFIG_TINYUSB_HID_ENABLED
 
 #include "esp_event.h"
+// Default keyboardlayout
+#include "KeyboardLayout.h"
+#include "KeyboardLayout_US.h"
 
 ESP_EVENT_DECLARE_BASE(ARDUINO_USB_HID_KEYBOARD_EVENTS);
 
@@ -65,14 +68,24 @@ class USBHIDKeyboard: public USBHIDDevice, public Print
 private:
     USBHID hid;
     KeyReport _keyReport;
+    // contains the used keymap
+    const uint8_t *_asciimap;
+    KeyboardLayout *keyboardlayout;
 public:
     USBHIDKeyboard(void);
-    void begin(void);
+    void begin(KeyboardLayout* layout=nullptr);
     void end(void);
+    void setModifier(uint8_t modifier);
+    void unsetModifier(uint8_t modifier);
     size_t write(uint8_t k);
     size_t write(const uint8_t *buffer, size_t size);
+    size_t write(uint16_t k);
+    size_t write(const uint16_t *buffer, size_t size);
+    size_t write(std::u16string text);
     size_t press(uint8_t k);
     size_t release(uint8_t k);
+    size_t press(uint16_t k);
+    size_t release(uint16_t k);
     void releaseAll(void);
     void sendReport(KeyReport* keys);
 
@@ -87,5 +100,7 @@ public:
     uint16_t _onGetDescriptor(uint8_t* buffer);
     void _onOutput(uint8_t report_id, const uint8_t* buffer, uint16_t len);
 };
+
+
 
 #endif

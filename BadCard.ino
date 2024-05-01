@@ -1,9 +1,24 @@
 #include <SD.h>
 
+#include "src/Unicode/unicode.h"
+
 #include "USB.h"
+
+// https://gitlab.com/DJPX/advanced-keyboard-support-arduino
 #include "src/USBHID-Keyboard/USBHIDKeyboard.h"
 USBHIDKeyboard Keyboard;
+#include "src/USBHID-Keyboard/KeyboardLayout_ES.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_DE.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_US.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_PT.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_FR.h"
+
 #include "keys.h"
+
+KeyboardLayout *layout = new KeyboardLayout_US();
+
+int currentKBLayout = 0;
+int kbLayoutsCursor = 0;
 
 // https://github.com/T-vK/ESP32-BLE-Keyboard
 #include "src/BLE-Keyboard/BleKeyboard.h"
@@ -23,9 +38,9 @@ int fileAmount;
 int mainCursor = 0;
 int scriptCursor = 0;
 
-const int maxFiles = 50;
+const int maxFiles = 100;
 
-String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE"};
+String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE", "KB LAYOUT"};
 
 const int ELEMENT_COUNT_MAX = 500;
 String fileText[ELEMENT_COUNT_MAX];
@@ -47,7 +62,7 @@ bool saveFile = false;
 bool isBLE = false;
 
 void getDirectory() {
-  fileAmount = 2;
+  fileAmount = 3;
   File dir = SD.open(root);
 
   while (true) {
@@ -126,7 +141,7 @@ void executeScript() {
     
     if (!isBLE) {
       USB.begin();
-      Keyboard.begin();
+      Keyboard.begin(layout);
     }
     
     display.println(fileName);
@@ -252,17 +267,30 @@ void processLine(String line) {
       payload = "";
     }
   }
-
+  
   if (payload == "" && command != "") {                       // Command from (1)
     processCommand(command);                                // Process command
-  } else if (command == "DELAY") {                            // Delay before the next commande
+  } else if (command == "DELAY") {                            // Delay before the next command
     delay((int) payload.toInt());                           // Convert payload to integer and make pause for 'payload' time
-  } else if (command == "STRING") { 
+  } else if (command == "STRING") {
+    int payloadLen = payload.length();
+    unsigned char array[payloadLen];
+    for (int i = 0; i < payloadLen; i++) {
+      array[i] = payload[i];
+    }
+    array[payloadLen] = '\0';
+
+    char16_t uString[payloadLen];
+
+    utf8_to_utf16(&array[0], payloadLen, &uString[0], payloadLen);
+    uString[payloadLen] = '\0';
     if (isBLE) {
       BLEKeyboard.print(payload);
     } else {
-      Keyboard.print(payload);                                // Type-in the payload
-    }                          // String processing
+      Keyboard.write(uString);                                // Type-in the payload
+    }                          
+    // String processing
+
   } else if (command == "REM") {                              // Comment
   } else if (command != "") {                                 // Command from (2)
     String remaining = line;                                // Prepare commands to run
@@ -523,11 +551,45 @@ void scriptOptions() {
 }
 
 void scriptMenu() {
-  char optionsList[3][20] = {"Execute script", "Edit script", "Delete script"};
+  int options = 3;
+  char optionsList[options][20] = {"Execute script", "Edit script", "Delete script"};
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < options; i++) {
     display.setCursor(20, i * 20);
     display.println(optionsList[i]);
+  }
+}
+
+void kbLayoutsOptions() {
+  currentKBLayout = kbLayoutsCursor;
+
+  switch (currentKBLayout) {
+    case 0:
+      layout = new KeyboardLayout_US();
+      break;
+    case 1:
+      layout = new KeyboardLayout_ES();
+      break;
+    case 2:
+      layout = new KeyboardLayout_DE();
+      break;
+    case 3:
+      layout = new KeyboardLayout_PT();
+      break;
+    case 4:
+      layout = new KeyboardLayout_FR();
+    break;
+  }
+  mainMenu();
+}
+int kbLayoutsLen = 5;
+
+void kbLayoutsMenu() {
+  char kbLayouts[kbLayoutsLen][6] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR"};
+
+  for (int i = 0; i < kbLayoutsLen; i++) {
+    display.setCursor(20, i * 20);
+    display.println(kbLayouts[i]);
   }
 }
 
@@ -545,8 +607,9 @@ void mainOptions() {
       sdFiles[1] = "ACTIVATE BLE";
     }
     mainMenu();
-  }
-   else {
+  } else if (mainCursor == 2) {
+    handleMenus(kbLayoutsLen-1, &kbLayoutsOptions, kbLayoutsCursor, &kbLayoutsMenu);
+  } else {
     handleMenus(2, &scriptOptions, scriptCursor, &scriptMenu);
   }
 }
@@ -565,7 +628,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.3.2";
+  String BCVersion = "BadCard v1.4.0";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
