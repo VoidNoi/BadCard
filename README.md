@@ -8,6 +8,7 @@ Ducky Script processing and executing ported from [arducky](https://github.com/C
 * Bluetooth connection
 * File editing (Thanks to [@guidoaguiar](https://github.com/guidoaguiar))
 * Horizontal file navigation
+* Multiple Keyboard layouts (en_US, es_ES, de_DE, pt_PT, fr_FR) only for USB connection for now.
 
 <strong>If you're having trouble executing your payloads on Windows 11 try adding a <code>DELAY 500</code> at the end of your payload https://github.com/VoidNoi/BadCard/issues/1#issuecomment-2000571655</strong>
 
