@@ -12,13 +12,16 @@ USBHIDKeyboard Keyboard;
 #include "src/USBHID-Keyboard/KeyboardLayout_US.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_PT.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_FR.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_SE.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_IT.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_HU.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_DK.h"
 
 #include "keys.h"
 
-KeyboardLayout *layout = new KeyboardLayout_US();
+KeyboardLayout *layout = new KeyboardLayout_ES();
 
 int currentKBLayout = 0;
-int kbLayoutsCursor = 0;
 
 // https://github.com/T-vK/ESP32-BLE-Keyboard
 #include "src/BLE-Keyboard/BleKeyboard.h"
@@ -37,6 +40,7 @@ int fileAmount;
 
 int mainCursor = 0;
 int scriptCursor = 0;
+int kbLayoutsCursor = 0;
 
 const int maxFiles = 100;
 
@@ -73,8 +77,10 @@ void getDirectory() {
     }
 
     String fileName = entry.name();
-    sdFiles[fileAmount] = fileName;
-    fileAmount++;
+    if (fileName != "language.lang") {
+      sdFiles[fileAmount] = fileName;
+      fileAmount++;
+    }
 
     if (fileAmount > maxFiles) {
       display.println("Can't store any more scripts");
@@ -176,6 +182,7 @@ void executeScript() {
         BLEKeyboard.end();
       } else {
         Keyboard.end();
+        delete layout;
       }
       mainMenu();
     } 
@@ -560,10 +567,8 @@ void scriptMenu() {
   }
 }
 
-void kbLayoutsOptions() {
-  currentKBLayout = kbLayoutsCursor;
-
-  switch (currentKBLayout) {
+void setKBLayout(int layoutNum) {
+  switch (layoutNum) {
     case 0:
       layout = new KeyboardLayout_US();
       break;
@@ -578,18 +583,37 @@ void kbLayoutsOptions() {
       break;
     case 4:
       layout = new KeyboardLayout_FR();
-    break;
+      break;
+    case 5:
+      layout = new KeyboardLayout_SE();
+      break;
+    case 6:
+      layout = new KeyboardLayout_IT();
+      break;
+    case 7:
+      layout = new KeyboardLayout_HU();
+      break;
+    case 8:
+      layout = new KeyboardLayout_DK();
+      break;
   }
+}
+
+void kbLayoutsOptions() {
+  currentKBLayout = kbLayoutsCursor;
+  setKBLayout(currentKBLayout);
+  
+  setLang(currentKBLayout);
+
   mainMenu();
 }
-int kbLayoutsLen = 5;
+int kbLayoutsLen = 9;
 
 void kbLayoutsMenu() {
-  char kbLayouts[kbLayoutsLen][6] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR"};
+  char kbLayouts[kbLayoutsLen][6] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK"};
 
-  for (int i = 0; i < kbLayoutsLen; i++) {
-    display.setCursor(20, i * 20);
-    display.println(kbLayouts[i]);
+  for (int i = 0; i <= kbLayoutsLen; i++) {
+    display.drawString(kbLayouts[i+screenPosY], 20, i*20);
   }
 }
 
@@ -628,7 +652,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.4.0";
+  String BCVersion = "BadCard v1.4.1";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
@@ -646,7 +670,7 @@ void bootLogo(){
   display.println("  \\/_/ \\/_/   \\/_____/   \\/_/ ");
 
   display.setTextSize(2);
-  
+
   display.setCursor(display.width()/2 - 95, display.height()/2 + 40);
   display.println("Press any key...");
 
@@ -657,6 +681,39 @@ void bootLogo(){
       mainMenu();
       break;
     }
+  }
+}
+
+void setLang(int lang) {
+  File langFile = SD.open(root + "/" + "language" + ".lang", FILE_WRITE);
+  langFile.print(lang);
+  langFile.close();
+}
+
+void getLang() {
+  String langPath = root + "/" + "language" + ".lang";
+
+  if (SD.exists(langPath)) {
+    File langFile = SD.open(langPath, FILE_READ);
+    if (langFile) {
+      String line;
+      while (langFile.available()) {
+        char c = langFile.read();
+        Serial.println(c);
+        if ((int)c != 0x0d) {
+          line += c;
+        }
+      }
+      langFile.close();
+      int langNum = line.toInt();
+      currentKBLayout = langNum;
+      setKBLayout(currentKBLayout);
+    }
+  } else {
+    File langFile = SD.open(langPath, FILE_WRITE);
+    langFile.print("0");
+    langFile.close();
+    layout = new KeyboardLayout_US();
   }
 }
 
@@ -672,13 +729,14 @@ void setup() {
   while (false == SD.begin(M5.getPin(m5::pin_name_t::sd_spi_ss), SPI)) {
     delay(1);
   }
-
+  Serial.begin(9600);
   if (!SD.exists(root)) {
     SD.mkdir(root);
   }
-
   display.setRotation(1);
   display.setTextColor(PURPLE);
+  
+  getLang();
 
   bootLogo();
 }

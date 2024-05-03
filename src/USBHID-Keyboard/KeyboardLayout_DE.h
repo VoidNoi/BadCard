@@ -32,7 +32,7 @@ extern const char16_t KeyboardLayout_de_DE_special_characters[AMOUNT_OF_SPECIAL_
     u'`',
     u'Ü',
     u'Ö',
-    u'Ä',
+    u'Ä'
   };
 
 extern const uint16_t KeyboardLayout_de_DE_special_keycodes[AMOUNT_OF_SPECIAL_CHARS] PROGMEM =

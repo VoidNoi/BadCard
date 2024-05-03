@@ -1,5 +1,5 @@
 /*
- * Spanish keyboard layout.
+ * Hungarian keyboard layout.
  */
 
 #include "KeyboardLayout.h"
@@ -10,45 +10,97 @@
 //================================================================================
 //  Keyboard
 
-// es_ES keys
-#define KEY_MASCULINE_ORDINAL    (136+0x35)
-#define KEY_INVERTED_EXCLAMATION (136+0x2e)
-#define KEY_GRAVE                (136+0x2f)
-#define KEY_N_TILDE              (136+0x33)
-#define KEY_ACUTE                (136+0x34)
-#define KEY_C_CEDILLA            (136+0x31)
+// hu_HU keys
+#define KEY_O_ACUTE             (136+0x2e)
+#define KEY_O_UMLAUT            (136+0x27)
+#define KEY_O_DOUBLE_ACUTE      (136+0x2f)
 
-#define AMOUNT_OF_SPECIAL_CHARS 11
+#define KEY_U_ACUTE             (136+0x30)
+#define KEY_U_UMLAUT            (136+0x2d)
+#define KEY_U_DOUBLE_ACUTE      (136+0x31)
 
-extern const char16_t KeyboardLayout_es_ES_special_characters[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
-  u'º',
-  u'¡',
-  u'`',
-  u'ñ',
-  u'´',
-  u'ç',
-  u'ª',
+#define KEY_A_ACUTE             (136+0x34)
+
+#define KEY_E_ACUTE             (136+0x33)
+
+#define KEY_I_ACUTE             (136+0x32)
+#define KEY_TWO                 (136+0x1f)
+#define KEY_THREE               (136+0x20)
+#define KEY_FOUR                (136+0x21)
+#define KEY_FIVE                (136+0x22)
+#define KEY_SIX                 (136+0x23)
+#define KEY_EIGHT               (136+0x25)
+#define KEY_NINE                (136+0x26)
+
+#define AMOUNT_OF_SPECIAL_CHARS 30
+
+extern const char16_t KeyboardLayout_hu_HU_special_characters[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
+  u'ó',
+  u'ö',
+  u'ő',
+  u'ú',
+  u'ü',
+  u'ű',
+  u'á',
+  u'é',
+  u'í',
+  u'Ó',
+  u'Ö',
+  u'Ő',
+  u'Ú',
+  u'Ü',
+  u'Ű',
+  u'Á',
+  u'É',
+  u'Í',
+  u'ˇ',
   u'^',
-  u'Ñ',
+  u'˘',
+  u'°',
+  u'˛',
+  u'˙',
+  u'´',
+  u'˝',
   u'¨',
-  u'Ç'
+  u'¸',
+  u'ß',
+  u'¤'
 };
 
-extern const uint16_t KeyboardLayout_es_ES_special_keycodes[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
-  KEY_MASCULINE_ORDINAL,
-  KEY_INVERTED_EXCLAMATION,
-  KEY_GRAVE,
-  KEY_N_TILDE,
-  KEY_ACUTE,
-  KEY_C_CEDILLA,
-  KEY_MASCULINE_ORDINAL | U16SHIFT,
-  KEY_GRAVE | U16SHIFT,
-  KEY_N_TILDE | U16SHIFT,
-  KEY_ACUTE | U16SHIFT,
-  KEY_C_CEDILLA | U16SHIFT
+extern const uint16_t KeyboardLayout_hu_HU_special_keycodes[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
+  KEY_O_ACUTE,
+  KEY_O_UMLAUT,
+  KEY_O_DOUBLE_ACUTE,
+  KEY_U_ACUTE,
+  KEY_U_UMLAUT,
+  KEY_U_DOUBLE_ACUTE,
+  KEY_A_ACUTE,
+  KEY_E_ACUTE,
+  KEY_I_ACUTE,
+  KEY_O_ACUTE | U16SHIFT,
+  KEY_O_UMLAUT | U16SHIFT,
+  KEY_O_DOUBLE_ACUTE | U16SHIFT,
+  KEY_U_ACUTE | U16SHIFT,
+  KEY_U_UMLAUT | U16SHIFT,
+  KEY_U_DOUBLE_ACUTE | U16SHIFT,
+  KEY_A_ACUTE | U16SHIFT,
+  KEY_E_ACUTE | U16SHIFT,
+  KEY_I_ACUTE | U16SHIFT,
+  KEY_TWO | ALT_GR,
+  KEY_THREE | ALT_GR,
+  KEY_FOUR | ALT_GR,
+  KEY_FIVE | ALT_GR,
+  KEY_SIX | ALT_GR,
+  KEY_EIGHT | ALT_GR,
+  KEY_NINE | ALT_GR,
+  KEY_O_UMLAUT | U16SHIFT,
+  KEY_U_UMLAUT | U16SHIFT,
+  KEY_O_ACUTE | U16SHIFT,
+  KEY_A_ACUTE | ALT_GR,
+  KEY_U_DOUBLE_ACUTE | ALT_GR
 };
 
- const uint8_t KeyboardLayout_es_ES[128] PROGMEM =
+extern const uint8_t KeyboardLayout_hu_HU[128] PROGMEM =
 {
   0x00,          // NUL
   0x00,          // SOH
@@ -84,22 +136,23 @@ extern const uint16_t KeyboardLayout_es_ES_special_keycodes[AMOUNT_OF_SPECIAL_CH
   0x00,          // US
   
   0x2c,          // ' '
-  0x1e|SHIFT,    // !
+  0x21|SHIFT,    // !
   0x1f|SHIFT,    // "
-  0x20|ALT_GR,   // #
-  0x21|SHIFT,    // $
+  0x1b|ALT_GR,   // #
+  0x33|ALT_GR,   // $
   0x22|SHIFT,    // %
-  0x23|SHIFT,    // &
-  0x2d,          // '
+  0x06|ALT_GR,   // &
+  0x1e|SHIFT,    // '
   0x25|SHIFT,    // (
   0x26|SHIFT,    // )
-  0x30|SHIFT,    // *
-  0x30,          // +
+  0x38|ALT_GR,   // *
+  0x20|SHIFT,    // +
   0x36,          // ,
   0x38,          // -
   0x37,          // .
-  0x24|SHIFT,    // /
-  0x27,          // 0
+  0x23|SHIFT,    // /
+  
+  0x35,          // 0
   0x1e,          // 1
   0x1f,          // 2
   0x20,          // 3
@@ -109,13 +162,15 @@ extern const uint16_t KeyboardLayout_es_ES_special_keycodes[AMOUNT_OF_SPECIAL_CH
   0x24,          // 7
   0x25,          // 8
   0x26,          // 9
+  
   0x37|SHIFT,    // :
-  0x36|SHIFT,    // ;
-  0x32,          // <
-  0x27|SHIFT,    // =
-  0x32|SHIFT,    // >
-  0x2d|SHIFT,    // ?
-  0x1f|ALT_GR,   // @
+  0x36|ALT_GR,   // ;
+  0x32|ALT_GR,   // <
+  0x24|SHIFT,    // =
+  0x1d|ALT_GR,   // >
+  0x36|SHIFT,    // ?
+  0x19|ALT_GR,   // @
+  
   0x04|SHIFT,    // A
   0x05|SHIFT,    // B
   0x06|SHIFT,    // C
@@ -140,14 +195,16 @@ extern const uint16_t KeyboardLayout_es_ES_special_keycodes[AMOUNT_OF_SPECIAL_CH
   0x19|SHIFT,    // V
   0x1a|SHIFT,    // W
   0x1b|SHIFT,    // X
-  0x1c|SHIFT,    // Y
-  0x1d|SHIFT,    // Z
-  0x2f|ALT_GR,   // [
-  0x35|ALT_GR,   // bslash
-  0x30|ALT_GR,   // ]
-  0x00,          // ^  not supported (requires dead key + space)
+  0x1d|SHIFT,    // Y
+  0x1c|SHIFT,    // Z
+  
+  0x09|ALT_GR,   // [
+  0x14|ALT_GR,   // bslash
+  0x0a|ALT_GR,   // ]
+  0x20|ALT_GR,   // ^
   0x38|SHIFT,    // _
-  0x00,          // `  not supported (requires dead key + space)
+  0x24|ALT_GR,   // `
+  
   0x04,          // a
   0x05,          // b
   0x06,          // c
@@ -172,25 +229,26 @@ extern const uint16_t KeyboardLayout_es_ES_special_keycodes[AMOUNT_OF_SPECIAL_CH
   0x19,          // v
   0x1a,          // w
   0x1b,          // x
-  0x1c,          // y
-  0x1d,          // z
-  0x34|ALT_GR,   // {
-  0x1e|ALT_GR,   // |
-  0x31|ALT_GR,   // }
-  0x21|ALT_GR,   // ~
+  0x1d,          // y
+  0x1c,          // z
+  
+  0x05|ALT_GR,   // {
+  0x1a|ALT_GR,   // |
+  0x11|ALT_GR,   // }
+  0x1e|ALT_GR,   // ~
   0x00           // DEL
 };
 
-class KeyboardLayout_ES : public KeyboardLayout
+class KeyboardLayout_HU : public KeyboardLayout
 {
 public:
-  KeyboardLayout_ES()
+  KeyboardLayout_HU()
   {
   }
-  ~KeyboardLayout_ES(){};
+  ~KeyboardLayout_HU(){};
   const uint8_t *getKeymap()
   {
-    return KeyboardLayout_es_ES;
+    return KeyboardLayout_hu_HU;
   }
   /**
    * @brief Returns the keycode for the given key
@@ -214,7 +272,7 @@ public:
       {
 	if (key < 128)
 	  {
-	    return KeyboardLayout_es_ES[key];
+	    return KeyboardLayout_hu_HU[key];
 	  }
 	// Could not match code
 	return 0;
@@ -229,18 +287,18 @@ public:
 	Serial.print("Searching key: ");
 	Serial.println(key);
 	Serial.print("Comparing with list: ");
-	Serial.println((char16_t)KeyboardLayout_es_ES_special_characters[i]);
+	Serial.println((char16_t)KeyboardLayout_hu_HU_special_characters[i]);
 	
-	if (key == KeyboardLayout_es_ES_special_characters[i])
+	if (key == KeyboardLayout_hu_HU_special_characters[i])
 	  {
 	    Serial.println("Compare keys");
 	    Serial.println(key);
-	    Serial.println((char16_t)KeyboardLayout_es_ES_special_characters[i]);
+	    Serial.println((char16_t)KeyboardLayout_hu_HU_special_characters[i]);
 	    Serial.println((char)key);
-	    Serial.println((char)KeyboardLayout_es_ES_special_characters[i]);
+	    Serial.println((char)KeyboardLayout_hu_HU_special_characters[i]);
 	    
 	    
-	    keycode = KeyboardLayout_es_ES_special_keycodes[i];
+	    keycode = KeyboardLayout_hu_HU_special_keycodes[i];
 	    Serial.println(keycode);
 	    break;
 	  }
