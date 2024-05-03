@@ -182,7 +182,6 @@ void executeScript() {
         BLEKeyboard.end();
       } else {
         Keyboard.end();
-        delete layout;
       }
       mainMenu();
     } 

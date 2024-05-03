@@ -48,7 +48,7 @@ extern const uint16_t KeyboardLayout_es_ES_special_keycodes[AMOUNT_OF_SPECIAL_CH
   KEY_C_CEDILLA | U16SHIFT
 };
 
- const uint8_t KeyboardLayout_es_ES[128] PROGMEM =
+extern const uint8_t KeyboardLayout_es_ES[128] PROGMEM =
 {
   0x00,          // NUL
   0x00,          // SOH
