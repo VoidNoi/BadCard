@@ -698,7 +698,7 @@ void getLang() {
       String line;
       while (langFile.available()) {
         char c = langFile.read();
-        Serial.println(c);
+
         if ((int)c != 0x0d) {
           line += c;
         }
@@ -728,7 +728,6 @@ void setup() {
   while (false == SD.begin(M5.getPin(m5::pin_name_t::sd_spi_ss), SPI)) {
     delay(1);
   }
-  Serial.begin(9600);
   if (!SD.exists(root)) {
     SD.mkdir(root);
   }
