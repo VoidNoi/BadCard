@@ -19,7 +19,7 @@ USBHIDKeyboard Keyboard;
 
 #include "keys.h"
 
-KeyboardLayout *layout = new KeyboardLayout_ES();
+KeyboardLayout *layout;
 
 int currentKBLayout = 0;
 
