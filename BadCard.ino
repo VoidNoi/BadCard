@@ -1,5 +1,4 @@
 #include <SD.h>
-#include <thread>
 
 #include "src/Unicode/unicode.h"
 
@@ -95,7 +94,6 @@ void getDirectory() {
   }
   fileAmount--;
 }
-int prevScreenPosY;
 
 void printMenu(int cursor, String* strings, int stringsAmount, int screenDirection) {
   for (int i = 0; i <= stringsAmount; i++) {
@@ -127,7 +125,6 @@ void handleMenus(int options, void (*executeFunction)(), int& cursor, String* st
       int drawCursor = cursor*20;
         
       display.drawString(">", 5, drawCursor);
-      prevScreenPosY = screenPosY;
 
       if (kb.isKeyPressed(';') && cursor > 0){
         cursor--;
