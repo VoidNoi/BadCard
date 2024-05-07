@@ -1,4 +1,5 @@
 #include <SD.h>
+#include <thread>
 
 #include "src/Unicode/unicode.h"
 
@@ -43,8 +44,13 @@ int scriptCursor = 0;
 int kbLayoutsCursor = 0;
 
 const int maxFiles = 100;
-
 String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE", "KB LAYOUT"};
+
+const int kbLayoutsLen = 9;
+String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK"};
+
+const int scriptOptionsAmount = 3;
+String scriptMenuOptions[scriptOptionsAmount] = {"Execute script", "Edit script", "Delete script"};
 
 const int ELEMENT_COUNT_MAX = 500;
 String fileText[ELEMENT_COUNT_MAX];
@@ -89,47 +95,71 @@ void getDirectory() {
   }
   fileAmount--;
 }
+int prevScreenPosY;
 
-void printDirectory() {
-  for (int i = 0; i <= fileAmount; i++) {
-    display.drawString(sdFiles[i+screenPosY], 20, i*20);
+void printMenu(int cursor, String* strings, int stringsAmount, int screenDirection) {
+  for (int i = 0; i <= stringsAmount; i++) {
+    int prevString = i-screenDirection;
+    if (screenDirection != 0) {
+      display.setTextColor(BLACK);
+      display.drawString(strings[prevString+screenPosY], 20, i*20);
+          
+      display.setTextColor(PURPLE);
+      display.drawString(strings[i+screenPosY], 20, i*20);
+    } else {
+      display.setTextColor(PURPLE);
+      display.drawString(strings[i], 20, i*20);
+    }
   }
 }
 
-void handleMenus(int options, void (*executeFunction)(), int& cursor, void (*printMenu)()) {
+void handleMenus(int options, void (*executeFunction)(), int& cursor, String* strings) {
+  display.fillScreen(BLACK);
   cursor = 0;
+  int screenDirection; // -1 = down | 0 = none | 1 = up;
   while (true) {
     M5Cardputer.update();
     if (kb.isChange()) {
-      display.fillScreen(BLACK);
-      
+      if (screenPosY == 0) {
+        screenDirection = 0;
+      }
+      display.setTextColor(BLACK);
+      int drawCursor = cursor*20;
+        
+      display.drawString(">", 5, drawCursor);
+      prevScreenPosY = screenPosY;
+
       if (kb.isKeyPressed(';') && cursor > 0){
         cursor--;
 
         if (screenPosY > 0 && cursor > 0) {
           screenPosY--;
+          screenDirection = -1;
         }
       } else if (kb.isKeyPressed('.') && cursor < options) {
         cursor++;
 
         if (cursor * 20 >= display.height() - 20) {
           screenPosY++;
+          screenDirection = 1;
         }
       }
-      int drawCursor = cursor*20;
-
+      
+      drawCursor = cursor*20;
       if (cursor * 20 > display.height()-20) {
         drawCursor = (display.height() - 20) - 15;
       }
 
       display.setTextColor(PURPLE);
-        
+
       display.drawString(">", 5, drawCursor);
 
-      printMenu();
+      printMenu(cursor, strings, options, screenDirection);
+
       if (kb.isKeyPressed(KEY_ENTER)) {
         screenPosY = 0;
         delay(100);
+        strings[0] = '\0';
         executeFunction();
         break;
       }
@@ -556,16 +586,6 @@ void scriptOptions() {
   }
 }
 
-void scriptMenu() {
-  int options = 3;
-  char optionsList[options][20] = {"Execute script", "Edit script", "Delete script"};
-
-  for (int i = 0; i < options; i++) {
-    display.setCursor(20, i * 20);
-    display.println(optionsList[i]);
-  }
-}
-
 void setKBLayout(int layoutNum) {
   switch (layoutNum) {
     case 0:
@@ -606,15 +626,6 @@ void kbLayoutsOptions() {
 
   mainMenu();
 }
-int kbLayoutsLen = 9;
-
-void kbLayoutsMenu() {
-  char kbLayouts[kbLayoutsLen][6] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK"};
-
-  for (int i = 0; i <= kbLayoutsLen; i++) {
-    display.drawString(kbLayouts[i+screenPosY], 20, i*20);
-  }
-}
 
 void mainOptions() {
   if (mainCursor == 0) {
@@ -631,9 +642,11 @@ void mainOptions() {
     }
     mainMenu();
   } else if (mainCursor == 2) {
-    handleMenus(kbLayoutsLen-1, &kbLayoutsOptions, kbLayoutsCursor, &kbLayoutsMenu);
+    kbLayouts[0] = "en_US";
+    handleMenus(kbLayoutsLen-1, kbLayoutsOptions, kbLayoutsCursor, kbLayouts);
   } else {
-    handleMenus(2, &scriptOptions, scriptCursor, &scriptMenu);
+    scriptMenuOptions[0] = "Execute script";
+    handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions);
   }
 }
 
@@ -641,9 +654,9 @@ void mainMenu() {
   display.fillScreen(BLACK);
   display.setTextSize(2);
   display.setCursor(20,1);
-
+  sdFiles[0] = "NEW SCRIPT";
   getDirectory();
-  handleMenus(fileAmount, &mainOptions, mainCursor, &printDirectory);
+  handleMenus(fileAmount, mainOptions, mainCursor, sdFiles);
 }
 
 void bootLogo(){
