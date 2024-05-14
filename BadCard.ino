@@ -45,7 +45,7 @@ int kbLayoutsCursor = 0;
 const int maxFiles = 100;
 String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE", "KB LAYOUT"};
 
-const int kbLayoutsLen = 9;
+const int kbLayoutsLen = 10; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
 String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK"};
 
 const int scriptOptionsAmount = 3;
@@ -88,11 +88,10 @@ void getDirectory() {
     }
 
     if (fileAmount > maxFiles) {
+      display.fillScreen(BLACK);
       display.println("Can't store any more scripts");
     }
-
   }
-  fileAmount--;
 }
 
 void printMenu(int cursor, String* strings, int stringsAmount, int screenDirection) {
@@ -156,7 +155,7 @@ void handleMenus(int options, void (*executeFunction)(), int& cursor, String* st
       if (kb.isKeyPressed(KEY_ENTER)) {
         screenPosY = 0;
         delay(100);
-        strings[0] = '\0';
+
         executeFunction();
         break;
       }
@@ -639,10 +638,8 @@ void mainOptions() {
     }
     mainMenu();
   } else if (mainCursor == 2) {
-    kbLayouts[0] = "en_US";
-    handleMenus(kbLayoutsLen-1, kbLayoutsOptions, kbLayoutsCursor, kbLayouts);
+    handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
   } else {
-    scriptMenuOptions[0] = "Execute script";
     handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions);
   }
 }
@@ -651,9 +648,9 @@ void mainMenu() {
   display.fillScreen(BLACK);
   display.setTextSize(2);
   display.setCursor(20,1);
-  sdFiles[0] = "NEW SCRIPT";
+
   getDirectory();
-  handleMenus(fileAmount, mainOptions, mainCursor, sdFiles);
+  handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles);
 }
 
 void bootLogo(){
@@ -661,7 +658,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.4.1";
+  String BCVersion = "BadCard v1.5.0";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
@@ -741,6 +738,7 @@ void setup() {
   if (!SD.exists(root)) {
     SD.mkdir(root);
   }
+
   display.setRotation(1);
   display.setTextColor(PURPLE);
   
