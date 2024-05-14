@@ -8,7 +8,9 @@ Ducky Script processing and executing ported from [arducky](https://github.com/C
 * Bluetooth connection
 * File editing (Thanks to [@guidoaguiar](https://github.com/guidoaguiar))
 * Horizontal file navigation
-* ([BETA](https://github.com/VoidNoi/BadCard/tree/topic-KBLayouts)) Multiple Keyboard layouts (en_US, es_ES, de_DE, pt_PT, fr_FR) only for USB connection for now.
+* Multiple Keyboard layouts (en_US, es_ES, de_DE, pt_PT, fr_FR, sv_SE, it_IT, hu_HU, da_DK) only for USB connection for now.
+
+You can contribute to BadCard by creating your own keyboard layouts following this guide: [How to create a keyboard layout for BadCard](https://gist.github.com/VoidNoi/4087bab5d67458a52fe22a574a5f7394)
 
 <strong>If you're having trouble executing your payloads on Windows 11 try adding a <code>DELAY 500</code> at the end of your payload https://github.com/VoidNoi/BadCard/issues/1#issuecomment-2000571655</strong>
 
