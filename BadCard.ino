@@ -18,6 +18,7 @@ USBHIDKeyboard Keyboard;
 #include "src/USBHID-Keyboard/KeyboardLayout_DK.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_BR.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_GB.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_NO.h"
 
 #include "keys.h"
 
@@ -47,8 +48,8 @@ int kbLayoutsCursor = 0;
 const int maxFiles = 100;
 String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE", "KB LAYOUT"};
 
-const int kbLayoutsLen = 12; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
-String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB"};
+const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
+String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
 
 const int scriptOptionsAmount = 3;
 String scriptMenuOptions[scriptOptionsAmount] = {"Execute script", "Edit script", "Delete script"};
@@ -618,6 +619,9 @@ void setKBLayout(int layoutNum) {
       break;
     case 10:
       layout = new KeyboardLayout_GB();
+      break;
+    case 11:
+      layout = new KeyboardLayout_NO();
       break;
   }
 }
