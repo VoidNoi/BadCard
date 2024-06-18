@@ -8,7 +8,7 @@ Ducky Script processing and executing ported from [arducky](https://github.com/C
 * Bluetooth connection
 * File editing (Thanks to [@guidoaguiar](https://github.com/guidoaguiar))
 * Horizontal file navigation
-* Multiple Keyboard layouts (en_US, es_ES, de_DE, pt_PT, fr_FR, sv_SE, it_IT, hu_HU, da_DK) only for USB connection for now.
+* Multiple Keyboard layouts (en_US, es_ES, de_DE, pt_PT, fr_FR, sv_SE, it_IT, hu_HU, da_DK, pt_BR, en_GB, nb_NO) only for USB connection for now.
 
 You can contribute to BadCard by creating your own keyboard layouts following this guide: [How to create a keyboard layout for BadCard](https://gist.github.com/VoidNoi/4087bab5d67458a52fe22a574a5f7394)
 
