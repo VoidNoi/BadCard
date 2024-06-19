@@ -2,6 +2,8 @@
 
 #include "src/Unicode/unicode.h"
 
+#include "icons.h"
+
 #include "USB.h"
 
 // https://gitlab.com/DJPX/advanced-keyboard-support-arduino
@@ -47,6 +49,7 @@ int kbLayoutsCursor = 0;
 
 const int maxFiles = 100;
 String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE", "KB LAYOUT"};
+int fileType[maxFiles] = {1, 3, 4};
 
 const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
 String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
@@ -72,6 +75,7 @@ bool creatingFile = false;
 bool editingFile = false;
 bool saveFile = false;
 bool isBLE = false;
+bool showIcons = false;
 
 void getDirectory() {
   fileAmount = 3;
@@ -85,10 +89,18 @@ void getDirectory() {
     }
 
     String fileName = entry.name();
+    
+    // Add file to list if not named language.lang
     if (fileName != "language.lang") {
+      if (entry.isDirectory()) {
+        fileType[fileAmount] = 6;
+      } else {
+        fileType[fileAmount] = 5;
+      }
       sdFiles[fileAmount] = fileName;
       fileAmount++;
     }
+    
 
     if (fileAmount > maxFiles) {
       display.fillScreen(BLACK);
@@ -97,23 +109,34 @@ void getDirectory() {
   }
 }
 
-void printMenu(int cursor, String* strings, int stringsAmount, int screenDirection) {
+void printMenu(int cursor, String* strings, int stringsAmount, int screenDirection, bool addIcons) {
+  int textPosX = addIcons ? 40 : 20;
   for (int i = 0; i <= stringsAmount; i++) {
     int prevString = i-screenDirection;
+    
     if (screenDirection != 0) {
+      if (addIcons){
+        display.setSwapBytes(true);
+        display.fillRect(20, i*20, 16, 16, BLACK);
+        display.pushImage(20, i*20, 16, 16, (uint16_t *)icons[fileType[i+screenPosY]]);
+      }
       display.setTextColor(BLACK);
-      display.drawString(strings[prevString+screenPosY], 20, i*20);
+      display.drawString(strings[prevString+screenPosY], textPosX, i*20);
           
       display.setTextColor(PURPLE);
-      display.drawString(strings[i+screenPosY], 20, i*20);
+      display.drawString(strings[i+screenPosY], textPosX, i*20);
     } else {
+      if (addIcons){
+        display.setSwapBytes(true);
+        display.pushImage(20, i*20, 16, 16, (uint16_t *)icons[fileType[i]]);
+      }
       display.setTextColor(PURPLE);
-      display.drawString(strings[i], 20, i*20);
+      display.drawString(strings[i], textPosX, i*20);
     }
   }
 }
 
-void handleMenus(int options, void (*executeFunction)(), int& cursor, String* strings) {
+void handleMenus(int options, void (*executeFunction)(), int& cursor, String* strings, bool addIcons) {
   display.fillScreen(BLACK);
   cursor = 0;
   int screenDirection; // -1 = down | 0 = none | 1 = up;
@@ -153,7 +176,7 @@ void handleMenus(int options, void (*executeFunction)(), int& cursor, String* st
 
       display.drawString(">", 5, drawCursor);
 
-      printMenu(cursor, strings, options, screenDirection);
+      printMenu(cursor, strings, options, screenDirection, addIcons);
 
       if (kb.isKeyPressed(KEY_ENTER)) {
         screenPosY = 0;
@@ -650,9 +673,9 @@ void mainOptions() {
     }
     mainMenu();
   } else if (mainCursor == 2) {
-    handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
+    handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts, false); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
   } else {
-    handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions);
+    handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
   }
 }
 
@@ -662,7 +685,7 @@ void mainMenu() {
   display.setCursor(20,1);
 
   getDirectory();
-  handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles);
+  handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
 }
 
 void bootLogo(){
@@ -670,7 +693,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.5.0";
+  String BCVersion = "BadCard v1.5.1";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
