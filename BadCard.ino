@@ -78,7 +78,7 @@ bool isBLE = false;
 bool showIcons = false;
 
 void getDirectory() {
-  fileAmount = 3;
+  fileAmount = 3;  
   File dir = SD.open(root);
 
   while (true) {
@@ -658,6 +658,10 @@ void kbLayoutsOptions() {
   mainMenu();
 }
 
+void handleFolders() {
+	
+}
+
 void mainOptions() {
   if (mainCursor == 0) {
     newFile(); 
@@ -675,7 +679,11 @@ void mainOptions() {
   } else if (mainCursor == 2) {
     handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts, false); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
   } else {
-    handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
+		if (fileType[mainCursor] == 6) {
+			handleFolders();
+		} else {
+			handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
+		}
   }
 }
 
