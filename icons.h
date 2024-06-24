@@ -341,9 +341,9 @@ static const uint16_t Newfoldericon[256] = {
 const uint16_t* icons[7] = {
   Empty,
   Newfileicon,
-	Newfoldericon,
+  Newfoldericon,
   BLEicon,
   KBLayouticon,
-	Fileicon,
-	Foldericon
+  Fileicon,
+  Foldericon
 };

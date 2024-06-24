@@ -48,8 +48,8 @@ int scriptCursor = 0;
 int kbLayoutsCursor = 0;
 
 const int maxFiles = 100;
-String sdFiles[maxFiles] = {"NEW SCRIPT", "ACTIVATE BLE", "KB LAYOUT"};
-int fileType[maxFiles] = {1, 3, 4};
+String sdFiles[maxFiles];
+int fileType[maxFiles] = {1, 2, 3, 4};
 
 const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
 String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
@@ -77,9 +77,8 @@ bool saveFile = false;
 bool isBLE = false;
 bool showIcons = false;
 
-void getDirectory() {
-  fileAmount = 3;  
-  File dir = SD.open(root);
+void getDirectory(String directory, int &amount, String* fileArray, int* types) {
+  File dir = SD.open(directory);
 
   while (true) {
     File entry =  dir.openNextFile();
@@ -93,16 +92,16 @@ void getDirectory() {
     // Add file to list if not named language.lang
     if (fileName != "language.lang") {
       if (entry.isDirectory()) {
-        fileType[fileAmount] = 6;
+        types[amount] = 6;
       } else {
-        fileType[fileAmount] = 5;
+        types[amount] = 5;
       }
-      sdFiles[fileAmount] = fileName;
-      fileAmount++;
+      fileArray[amount] = fileName;
+      amount++;
     }
     
 
-    if (fileAmount > maxFiles) {
+    if (amount > maxFiles) {
       display.fillScreen(BLACK);
       display.println("Can't store any more scripts");
     }
@@ -495,14 +494,11 @@ void removeLine(String file[], int y){
 }
 
 void cleanNewFile() {
-  for (int i = 0; i <= newFileLines; i++) {
-    fileText[i] = '\0';
-  }
+	cleanArray<String*>(fileText, newFileLines);
   cursorPosX = 0;
   cursorPosY = 0;
   screenPosX = 0;
   screenPosY = 0;
-  newFileLines = 0;
 }
 
 void saveFileChanges() {
@@ -592,7 +588,6 @@ void deleteScript() {
     delay(1000);
   }
   mainMenu();
-
 }
 
 void scriptOptions() {
@@ -658,14 +653,29 @@ void kbLayoutsOptions() {
   mainMenu();
 }
 
-void handleFolders() {
-	
+template <typename T> void cleanArray(T array, int length) {
+  for (int i = 0; i <= length; i++) {
+    array[i] = '\0';
+  }
+	length = 0;
+}
+
+void handleFolders(String folderLoc) {
+	getDirectory(folderLoc, fileAmount, sdFiles, fileType);
+	mainCursor = 0;
+	handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
+	cleanArray<String*>(sdFiles, fileAmount);
 }
 
 void mainOptions() {
-  if (mainCursor == 0) {
-    newFile(); 
-  } else if (mainCursor == 1) {
+	switch (fileType[mainCursor]) {
+	case 1:
+		newFile();
+		break;
+	case 2:
+		//Make folder
+		break;
+	case 3:
     display.fillScreen(BLACK);
     if (!isBLE) {
       isBLE = true;
@@ -676,15 +686,18 @@ void mainOptions() {
       sdFiles[1] = "ACTIVATE BLE";
     }
     mainMenu();
-  } else if (mainCursor == 2) {
+		break;
+	case 4:
     handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts, false); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
-  } else {
-		if (fileType[mainCursor] == 6) {
-			handleFolders();
-		} else {
-			handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
-		}
-  }
+		break;
+	case 5:
+		handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
+		break;
+	case 6:
+		fileAmount = 0;
+		handleFolders(root + "/" + sdFiles[mainCursor]);
+		break;
+	}
 }
 
 void mainMenu() {
@@ -692,8 +705,14 @@ void mainMenu() {
   display.setTextSize(2);
   display.setCursor(20,1);
 
-  getDirectory();
-  handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
+	fileAmount = 4;
+	sdFiles[0] = "NEW SCRIPT";
+	sdFiles[1] = "NEW FOLDER";
+	sdFiles[2] = "ACTIVATE BLE";
+	sdFiles[3] = "KB LAYOUT";
+  //getDirectory(root, fileAmount, sdFiles, fileType);
+	handleFolders(root);
+  //handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
 }
 
 void bootLogo(){
