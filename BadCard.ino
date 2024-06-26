@@ -38,8 +38,12 @@ BleKeyboard BLEKeyboard("GoodCard :)", "VoidNoi", 100);
 #define display M5Cardputer.Display
 #define kb M5Cardputer.Keyboard
 
+const int maxFiles = 100;
 File myFile;
 String root = "/BadCard";
+String path = root;
+String pathArray[maxFiles] = {root};
+int pathLen = 0;
 
 int fileAmount;
 
@@ -47,9 +51,8 @@ int mainCursor = 0;
 int scriptCursor = 0;
 int kbLayoutsCursor = 0;
 
-const int maxFiles = 100;
 String sdFiles[maxFiles];
-int fileType[maxFiles] = {1, 2, 3, 4};
+int fileType[maxFiles];
 
 const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
 String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
@@ -76,6 +79,13 @@ bool editingFile = false;
 bool saveFile = false;
 bool isBLE = false;
 bool showIcons = false;
+
+void getCurrentPath() {
+  path = "";
+  for (int i = 0; i <= pathLen; i++) {
+    path += pathArray[i];
+  }
+}
 
 void getDirectory(String directory, int &amount, String* fileArray, int* types) {
   File dir = SD.open(directory);
@@ -192,7 +202,7 @@ void executeScript() {
   display.fillScreen(BLACK);
   display.setCursor(1,1);
   display.println("Executing function");
-  String fileName = root + "/" + sdFiles[mainCursor];
+  String fileName = path + "/" + sdFiles[mainCursor];
 
   if (SD.exists(fileName)) {
     
@@ -494,7 +504,7 @@ void removeLine(String file[], int y){
 }
 
 void cleanNewFile() {
-	cleanArray<String*>(fileText, newFileLines);
+  cleanArray<String*>(fileText, newFileLines);
   cursorPosX = 0;
   cursorPosY = 0;
   screenPosX = 0;
@@ -503,6 +513,7 @@ void cleanNewFile() {
 
 void saveFileChanges() {
   saveFile = false;
+  // TODO Change root to path after implementing in-folder file creating 
   myFile = SD.open(root + "/" + fileName + ".txt", FILE_WRITE);
   if (myFile) {
     for (int i = 0; i <= newFileLines; i++) {
@@ -531,7 +542,7 @@ void saveFileChanges() {
 
 void editFile() {
   // Open the file for reading
-  myFile = SD.open(root + "/" + fileName, FILE_READ);
+  myFile = SD.open(path + "/" + fileName, FILE_READ);
   if (myFile) {
     // Load the file into the fileText array
     newFileLines = 0;
@@ -574,7 +585,7 @@ void newFile() {
 }
 
 void deleteScript() {
-  String fileName = root + "/" + sdFiles[mainCursor];
+  String fileName = path + "/" + sdFiles[mainCursor];
   display.fillScreen(BLACK);
   display.setCursor(1,1);
   display.println("Deleting script...");
@@ -660,22 +671,26 @@ template <typename T> void cleanArray(T array, int length) {
 	length = 0;
 }
 
-void handleFolders(String folderLoc) {
-	getDirectory(folderLoc, fileAmount, sdFiles, fileType);
-	mainCursor = 0;
-	handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
-	cleanArray<String*>(sdFiles, fileAmount);
+void handleFolders() {
+  if (pathArray[pathLen] != root) {
+    pathArray[pathLen] = "/" + sdFiles[mainCursor];
+    getCurrentPath();
+  }
+  getDirectory(path, fileAmount, sdFiles, fileType);
+  mainCursor = 0;
+  handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
+  cleanArray<String*>(sdFiles, fileAmount);
 }
 
 void mainOptions() {
-	switch (fileType[mainCursor]) {
-	case 1:
-		newFile();
-		break;
-	case 2:
-		//Make folder
-		break;
-	case 3:
+  switch (fileType[mainCursor]) {
+  case 1:
+    newFile();
+    break;
+  case 2:
+    //Make folder
+    break;
+  case 3:
     display.fillScreen(BLACK);
     if (!isBLE) {
       isBLE = true;
@@ -686,33 +701,35 @@ void mainOptions() {
       sdFiles[1] = "ACTIVATE BLE";
     }
     mainMenu();
-		break;
-	case 4:
+    break;
+  case 4:
     handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts, false); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
-		break;
-	case 5:
-		handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
-		break;
-	case 6:
-		fileAmount = 0;
-		handleFolders(root + "/" + sdFiles[mainCursor]);
-		break;
-	}
+    break;
+  case 5:
+    handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
+    break;
+  case 6:
+    fileAmount = 0;
+    pathLen++;
+    handleFolders();
+    break;
+  }
 }
 
 void mainMenu() {
-  display.fillScreen(BLACK);
-  display.setTextSize(2);
-  display.setCursor(20,1);
+  fileAmount = 4;
+  path = root;
+  pathLen = 0;
 
-	fileAmount = 4;
-	sdFiles[0] = "NEW SCRIPT";
-	sdFiles[1] = "NEW FOLDER";
-	sdFiles[2] = "ACTIVATE BLE";
-	sdFiles[3] = "KB LAYOUT";
-  //getDirectory(root, fileAmount, sdFiles, fileType);
-	handleFolders(root);
-  //handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
+  sdFiles[0] = "NEW SCRIPT";
+  sdFiles[1] = "NEW FOLDER";
+  sdFiles[2] = "ACTIVATE BLE";
+  sdFiles[3] = "KB LAYOUT";
+  fileType[0] = 1;
+  fileType[1] = 2;
+  fileType[2] = 3;
+  fileType[3] = 4;
+  handleFolders();
 }
 
 void bootLogo(){
