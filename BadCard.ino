@@ -38,6 +38,11 @@ BleKeyboard BLEKeyboard("GoodCard :)", "VoidNoi", 100);
 #define display M5Cardputer.Display
 #define kb M5Cardputer.Keyboard
 
+// The almighty doesn't want kbLayoutsLen and KbLayouts initialization to be below maxFiles for some reason
+// so don't you dare move it or the keyboard layouts menu will be bugged
+const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
+String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
+
 const int maxFiles = 100;
 File myFile;
 String root = "/BadCard";
@@ -53,9 +58,6 @@ int kbLayoutsCursor = 0;
 
 String sdFiles[maxFiles];
 int fileType[maxFiles];
-
-const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
-String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
 
 const int scriptOptionsAmount = 3;
 String scriptMenuOptions[scriptOptionsAmount] = {"Execute script", "Edit script", "Delete script"};
