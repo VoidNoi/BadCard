@@ -56,8 +56,8 @@ int mainCursor = 0;
 int scriptCursor = 0;
 int kbLayoutsCursor = 0;
 
-String sdFiles[maxFiles];
-int fileType[maxFiles];
+String sdFiles[maxFiles] = {"NEW SCRIPT", "NEW FOLDER", "ACTIVATE BLE", "KB LAYOUT"};
+int fileType[maxFiles] = {1, 2, 3, 4};
 
 const int scriptOptionsAmount = 3;
 String scriptMenuOptions[scriptOptionsAmount] = {"Execute script", "Edit script", "Delete script"};
@@ -246,7 +246,7 @@ void executeScript() {
       } else {
         Keyboard.end();
       }
-      mainMenu();
+      handleFolders();
     } 
 }
 
@@ -515,8 +515,8 @@ void cleanNewFile() {
 
 void saveFileChanges() {
   saveFile = false;
-  // TODO Change root to path after implementing in-folder file creating 
-  myFile = SD.open(root + "/" + fileName + ".txt", FILE_WRITE);
+
+  myFile = SD.open(path + "/" + fileName + ".txt", FILE_WRITE);
   if (myFile) {
     for (int i = 0; i <= newFileLines; i++) {
       int textLen = fileText[i].length();
@@ -535,7 +535,7 @@ void saveFileChanges() {
     }
 
     myFile.close();
-    mainMenu();
+    handleFolders();
   } else {
     display.println("File didn't open");
     myFile.close();
@@ -600,7 +600,7 @@ void deleteScript() {
     display.println("Script couldn't be deleted");
     delay(1000);
   }
-  mainMenu();
+  handleFolders();
 }
 
 void scriptOptions() {
@@ -663,7 +663,7 @@ void kbLayoutsOptions() {
   
   setLang(currentKBLayout);
 
-  mainMenu();
+  handleFolders();
 }
 
 template <typename T> void cleanArray(T array, int length) {
@@ -675,13 +675,37 @@ template <typename T> void cleanArray(T array, int length) {
 
 void handleFolders() {
   if (pathArray[pathLen] != root) {
-    pathArray[pathLen] = "/" + sdFiles[mainCursor];
+    fileAmount = 1;
+    if (sdFiles[mainCursor] != ".." && fileType[scriptCursor] < 8) {
+      pathArray[pathLen] = "/" + sdFiles[mainCursor];
+    }
     getCurrentPath();
+    sdFiles[0] = "..";
+    fileType[0] = 7;
+  } else {
+    fileAmount = 4;
+    path = root;
+    pathLen = 0;
+
+    sdFiles[0] = "NEW SCRIPT";
+    sdFiles[1] = "NEW FOLDER";
+    sdFiles[2] = "ACTIVATE BLE";
+    sdFiles[3] = "KB LAYOUT";
+
+    fileType[0] = 1;
+    fileType[1] = 2;
+    fileType[2] = 3;
+    fileType[3] = 4;
   }
+
   getDirectory(path, fileAmount, sdFiles, fileType);
+  // Empties an extra value at the end to prevent previous files from appearing in the menu
+  //sdFiles[fileAmount] = '\0';
+  //fileType[fileAmount] = '\0'; 
+
   mainCursor = 0;
   handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
-  cleanArray<String*>(sdFiles, fileAmount);
+  //cleanArray<String*>(sdFiles, fileAmount);
 }
 
 void mainOptions() {
@@ -702,36 +726,27 @@ void mainOptions() {
       isBLE = false;
       sdFiles[1] = "ACTIVATE BLE";
     }
-    mainMenu();
+    handleFolders();
     break;
   case 4:
     handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts, false); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
     break;
   case 5:
-    handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, false);
+    fileType[0] = 8;
+    fileType[1] = 9;
+    fileType[2] = 10;
+    handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, true);
     break;
   case 6:
-    fileAmount = 0;
     pathLen++;
     handleFolders();
     break;
+  case 7:
+    sdFiles[pathLen] = '\0';
+    pathLen--;
+    handleFolders();
+    break;
   }
-}
-
-void mainMenu() {
-  fileAmount = 4;
-  path = root;
-  pathLen = 0;
-
-  sdFiles[0] = "NEW SCRIPT";
-  sdFiles[1] = "NEW FOLDER";
-  sdFiles[2] = "ACTIVATE BLE";
-  sdFiles[3] = "KB LAYOUT";
-  fileType[0] = 1;
-  fileType[1] = 2;
-  fileType[2] = 3;
-  fileType[3] = 4;
-  handleFolders();
 }
 
 void bootLogo(){
@@ -765,7 +780,7 @@ void bootLogo(){
     M5Cardputer.update();
     if (kb.isChange()) {
       delay(100);
-      mainMenu();
+      handleFolders();
       break;
     }
   }
@@ -819,7 +834,6 @@ void setup() {
   if (!SD.exists(root)) {
     SD.mkdir(root);
   }
-
   display.setRotation(1);
   display.setTextColor(PURPLE);
   
@@ -869,7 +883,7 @@ void loop() {
             saveFile = true;
           }
           if (editingFile) {
-            String fullName = sdFiles[mainCursor];
+            String fullName = fileName;
             fullName.remove(fullName.length()-4);
             fileName = fullName;
             editingFile = false;
