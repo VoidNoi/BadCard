@@ -92,6 +92,10 @@ void getCurrentPath() {
 void getDirectory(String directory, int &amount, String* fileArray, int* types) {
   File dir = SD.open(directory);
 
+  String tempFilesArray[maxFiles];
+  int tempFilesAmount = 0;
+  int tempDirsAmount = amount;
+
   while (true) {
     File entry =  dir.openNextFile();
     if (!entry) {
@@ -100,22 +104,31 @@ void getDirectory(String directory, int &amount, String* fileArray, int* types) 
     }
 
     String fileName = entry.name();
-    
     // Add file to list if not named language.lang
     if (fileName != "language.lang") {
       if (entry.isDirectory()) {
-        types[amount] = 6;
+        fileArray[tempDirsAmount] = fileName; // Store directories first
+        types[tempDirsAmount] = 6; // Set type directory
+        tempDirsAmount++;
       } else {
-        types[amount] = 5;
+        tempFilesArray[tempFilesAmount] = fileName; // Store files in a temporary array
+        tempFilesAmount++;
       }
-      fileArray[amount] = fileName;
       amount++;
     }
     
-
     if (amount > maxFiles) {
       display.fillScreen(BLACK);
       display.println("Can't store any more scripts");
+    }
+  }
+  int filesCount = 0;
+  // Set files after directories and set the type to file
+  for(int i = tempDirsAmount; i < amount; i++) {
+    if (tempFilesAmount > 0) {
+      fileArray[i] = tempFilesArray[filesCount];
+      types[i] = 5;
+      filesCount++;
     }
   }
 }
