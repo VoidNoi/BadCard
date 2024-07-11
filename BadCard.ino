@@ -690,13 +690,17 @@ template <typename T> void cleanArray(T array, int length) {
 
 void handleFolders() {
   if (pathArray[pathLen] != root) {
-    fileAmount = 1;
-    if (sdFiles[mainCursor] != ".." && fileType[scriptCursor] < 8) {
+    fileAmount = 3;
+    if (mainCursor > 2 && fileType[scriptCursor] < 8) {
       pathArray[pathLen] = "/" + sdFiles[mainCursor];
     }
     getCurrentPath();
     sdFiles[0] = "..";
+    sdFiles[1] = "NEW SCRIPT";
+    sdFiles[2] = "NEW FOLDER";
     fileType[0] = 7;
+    fileType[1] = 1;
+    fileType[2] = 2;
   } else {
     fileAmount = 4;
     path = root;
