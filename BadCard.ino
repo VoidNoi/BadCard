@@ -552,6 +552,8 @@ void saveFileChanges() {
   } else {
     display.println("File didn't open");
     myFile.close();
+    delay(2000);
+    handleFolders();
   }
 }
 
@@ -713,12 +715,31 @@ void handleFolders() {
 
   getDirectory(path, fileAmount, sdFiles, fileType);
   // Empties an extra value at the end to prevent previous files from appearing in the menu
-  //sdFiles[fileAmount] = '\0';
-  //fileType[fileAmount] = '\0'; 
+  sdFiles[fileAmount] = '\0';
+  fileType[fileAmount] = '\0';
 
   mainCursor = 0;
   handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
-  //cleanArray<String*>(sdFiles, fileAmount);
+}
+
+void newFolder() {
+  fileName = '\0';
+
+  display.setCursor(1,1);
+  display.fillScreen(BLACK);
+
+  display.setCursor(display.width()/2-(12/2)*letterWidth, 0);
+  display.println("Folder Name:");
+  display.drawString(fileName, display.width()/2-(fileName.length()/2)*letterWidth, letterHeight);
+  saveFile = true;
+}
+
+void makeFolder() {
+  saveFile = false;
+
+  getCurrentPath();
+  SD.mkdir(path + "/" + fileName);
+  handleFolders();
 }
 
 void mainOptions() {
@@ -727,7 +748,7 @@ void mainOptions() {
     newFile();
     break;
   case 2:
-    //Make folder
+    newFolder();
     break;
   case 3:
     display.fillScreen(BLACK);
@@ -870,14 +891,21 @@ void loop() {
         if (status.del) {
           fileName.remove(fileName.length() - 1);  
         }
-
+        
         display.fillScreen(BLACK);
-        display.setCursor(display.width()/2-5*letterWidth, 0);
-        display.println("File Name:");
+
+        String newFileName = fileType[mainCursor] == 2 ? "Folder Name:" : "File Name:";
+
+        display.setCursor(display.width()/2-(newFileName.length()/2)*letterWidth, 0);
+        display.println(newFileName);
         display.drawString(fileName, display.width()/2-(fileName.length()/2)*letterWidth, letterHeight);
 
         if (status.enter) {
-          saveFileChanges();
+          if (fileType[mainCursor] == 2) {
+            makeFolder();
+          } else {
+            saveFileChanges();
+          }
         }
       }
     }
