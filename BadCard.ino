@@ -746,15 +746,92 @@ void makeFolder() {
   handleFolders();
 }
 
+void deleteFolderMenu() {
+  int deleteCursor = 1;
+  int deleteCursorPosX = display.width()/2+2*letterWidth/2+letterWidth;
+  display.fillScreen(BLACK); 
+  display.setCursor(display.width()/2-15*letterWidth/2, display.height()/2-letterHeight*3);
+  display.println("Deleting folder");
+  display.setCursor(display.width()/2-12*letterWidth/2, display.height()/2-letterHeight/2*3);
+  display.println("Are you sure?");
+  display.setCursor(display.width()/2-10*letterWidth/2, display.height()/2);
+  display.println("Yes     No");
+  while (true) {
+    M5Cardputer.update();
+    if (kb.isChange()) {
+      display.setTextColor(BLACK);
+      display.drawString(">", deleteCursorPosX, display.height()/2);
+      
+      if (kb.isKeyPressed(',')) {
+        deleteCursor = 0;
+        
+        deleteCursorPosX = display.width()/2-10*letterWidth/2-letterWidth;
+      }
+      if (kb.isKeyPressed('/')) {
+        deleteCursor = 1;
+
+        deleteCursorPosX = display.width()/2+2*letterWidth/2+letterWidth;
+      }
+      
+      display.setTextColor(PURPLE);
+      display.drawString(">", deleteCursorPosX, display.height()/2);
+
+      if (kb.isKeyPressed(KEY_ENTER)) {
+        String folderPath = path + "/" + sdFiles[mainCursor];
+        File dir = SD.open(folderPath);
+        if (!SD.rmdir(folderPath)){
+          while (true) {
+            File folderFile =  dir.openNextFile();
+            if (!folderFile) {
+              // no more files
+              if (SD.rmdir(folderPath)) {
+                display.fillScreen(BLACK);
+                display.setCursor(1,1);
+                display.println("Folder successfully deleted");
+              } else {
+                display.fillScreen(BLACK);
+                display.setCursor(1,1);
+                display.println("Folder couldn't be deleted");
+              }
+              break;
+            }
+            
+            String folderFileName = folderFile.name();
+            if (folderFile.isDirectory()) {
+              display.fillScreen(BLACK);
+                display.setCursor(1,1);
+              display.println("Remove folders first");
+              
+            } else {
+              if (!SD.remove(folderPath + "/" + folderFileName)) {
+                display.fillScreen(BLACK);
+                display.setCursor(1,1);
+                display.println("Couldn't remove a file");
+              }
+            }
+          }
+        } else {
+          display.fillScreen(BLACK);
+          display.setCursor(1,1);
+          display.println("Folder couldn't be deleted");
+        }
+        delay(2000);
+        handleFolders();
+        break;
+      }
+    }
+  }
+}
+
 void mainOptions() {
   switch (fileType[mainCursor]) {
-  case 1:
+  case 1: // New File
     newFile();
     break;
-  case 2:
+  case 2: // New Folder
     newFolder();
     break;
-  case 3:
+  case 3: // BLE toggle
     display.fillScreen(BLACK);
     if (!isBLE) {
       isBLE = true;
@@ -766,20 +843,24 @@ void mainOptions() {
     }
     handleFolders();
     break;
-  case 4:
+  case 4: // Keyboard Layouts
     handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts, false); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
     break;
-  case 5:
+  case 5: // File
     fileType[0] = 8;
     fileType[1] = 9;
     fileType[2] = 10;
     handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, true);
     break;
-  case 6:
-    pathLen++;
-    handleFolders();
+  case 6: // Folder
+    if (digitalRead(0)==0) {
+      deleteFolderMenu();
+    } else {
+      pathLen++;
+      handleFolders();
+    }
     break;
-  case 7:
+  case 7: // Previous folder
     sdFiles[pathLen] = '\0';
     pathLen--;
     handleFolders();
