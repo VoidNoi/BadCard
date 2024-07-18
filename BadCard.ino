@@ -22,8 +22,6 @@ USBHIDKeyboard Keyboard;
 #include "src/USBHID-Keyboard/KeyboardLayout_GB.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_NO.h"
 
-#include "keys.h"
-
 KeyboardLayout *layout;
 
 int currentKBLayout = 0;
@@ -44,6 +42,9 @@ const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to preve
 String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
 
 const int maxFiles = 100;
+
+#include "keys.h"
+
 File myFile;
 String root = "/BadCard";
 String path = root;
@@ -225,6 +226,8 @@ void executeScript() {
       USB.begin();
       Keyboard.begin(layout);
     }
+
+    delay(1000);
     
     display.println(fileName);
 
