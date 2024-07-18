@@ -20,8 +20,6 @@ USBHIDKeyboard Keyboard;
 #include "src/USBHID-Keyboard/KeyboardLayout_GB.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_NO.h"
 
-#include "keys.h"
-
 KeyboardLayout *layout;
 
 int currentKBLayout = 0;
@@ -35,6 +33,8 @@ BleKeyboard BLEKeyboard("GoodCard :)", "VoidNoi", 100);
 
 #define display M5Cardputer.Display
 #define kb M5Cardputer.Keyboard
+
+#include "keys.h"
 
 File myFile;
 String root = "/BadCard";
@@ -178,6 +178,8 @@ void executeScript() {
       USB.begin();
       Keyboard.begin(layout);
     }
+
+    delay(1000);
     
     display.println(fileName);
 
@@ -670,7 +672,7 @@ void bootLogo(){
   display.fillScreen(BLACK);
   
   display.setTextSize(2);
-  String BCVersion = "BadCard v1.5.0";
+  String BCVersion = "BadCard v1.5.1";
 
   display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
   display.println(BCVersion);
