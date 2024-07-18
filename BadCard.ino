@@ -796,15 +796,18 @@ void deleteFolderMenu() {
                 display.setCursor(1,1);
                 display.println("Folder couldn't be deleted");
               }
+
+              mainCursor = 0;
               break;
             }
             
             String folderFileName = folderFile.name();
             if (folderFile.isDirectory()) {
               display.fillScreen(BLACK);
-                display.setCursor(1,1);
+              display.setCursor(1,1);
               display.println("Remove folders first");
-              
+              mainCursor = 0;
+              break;
             } else {
               if (!SD.remove(folderPath + "/" + folderFileName)) {
                 display.fillScreen(BLACK);
@@ -816,11 +819,11 @@ void deleteFolderMenu() {
         } else {
           display.fillScreen(BLACK);
           display.setCursor(1,1);
-          display.println("Folder couldn't be deleted");
+          display.println("Folder successfully deleted");
         }
-        delay(2000);
+        dir.close();
+        delay(1500);
         handleFolders();
-        break;
       }
     }
   }
@@ -857,6 +860,7 @@ void mainOptions() {
     break;
   case 6: // Folder
     if (digitalRead(0)==0) {
+      pathLen++;
       deleteFolderMenu();
     } else {
       pathLen++;
