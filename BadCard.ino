@@ -73,6 +73,8 @@ int newFileLines = 0;
 int letterHeight = 16;
 int letterWidth = 12;
 
+int deletingFolder = false;
+
 String cursor = "|";
 
 String fileName;
@@ -694,7 +696,7 @@ template <typename T> void cleanArray(T array, int length) {
 void handleFolders() {
   if (pathArray[pathLen] != root) {
     fileAmount = 3;
-    if (mainCursor > 2 && fileType[scriptCursor] < 8) {
+    if (mainCursor > 2 && fileType[scriptCursor] < 8 && !deletingFolder) {
       pathArray[pathLen] = "/" + sdFiles[mainCursor];
     }
     getCurrentPath();
@@ -726,6 +728,7 @@ void handleFolders() {
   fileType[fileAmount] = '\0';
 
   mainCursor = 0;
+  deletingFolder = false;
   handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
 }
 
@@ -780,49 +783,53 @@ void deleteFolderMenu() {
       display.drawString(">", deleteCursorPosX, display.height()/2);
 
       if (kb.isKeyPressed(KEY_ENTER)) {
-        String folderPath = path + "/" + sdFiles[mainCursor];
-        File dir = SD.open(folderPath);
-        if (!SD.rmdir(folderPath)){
-          while (true) {
-            File folderFile =  dir.openNextFile();
-            if (!folderFile) {
-              // no more files
-              if (SD.rmdir(folderPath)) {
-                display.fillScreen(BLACK);
-                display.setCursor(1,1);
-                display.println("Folder successfully deleted");
-              } else {
-                display.fillScreen(BLACK);
-                display.setCursor(1,1);
-                display.println("Folder couldn't be deleted");
-              }
+        if (deleteCursor == 0) {
+          String folderPath = path + "/" + sdFiles[mainCursor];
+          File dir = SD.open(folderPath);
+          
+          if (!SD.rmdir(folderPath)){
+            while (true) {
+              File folderFile =  dir.openNextFile();
+              if (!folderFile) {
+                // no more files
+                if (SD.rmdir(folderPath)) {
+                  display.fillScreen(BLACK);
+                  display.setCursor(1,1);
+                  display.println("Folder successfully deleted");
+                } else {
+                  display.fillScreen(BLACK);
+                  display.setCursor(1,1);
+                  display.println("Folder couldn't be deleted");
+                }
 
-              mainCursor = 0;
-              break;
-            }
-            
-            String folderFileName = folderFile.name();
-            if (folderFile.isDirectory()) {
-              display.fillScreen(BLACK);
-              display.setCursor(1,1);
-              display.println("Remove folders first");
-              mainCursor = 0;
-              break;
-            } else {
-              if (!SD.remove(folderPath + "/" + folderFileName)) {
+                mainCursor = 0;
+                break;
+              }
+              
+              String folderFileName = folderFile.name();
+              if (folderFile.isDirectory()) {
                 display.fillScreen(BLACK);
                 display.setCursor(1,1);
-                display.println("Couldn't remove a file");
+                display.println("Remove folders first");
+                mainCursor = 0;
+                break;
+              } else {
+                if (!SD.remove(folderPath + "/" + folderFileName)) {
+                  display.fillScreen(BLACK);
+                  display.setCursor(1,1);
+                  display.println("Couldn't remove a file");
+                }
               }
             }
+          } else {
+            display.fillScreen(BLACK);
+            display.setCursor(1,1);
+            display.println("Folder successfully deleted");
           }
-        } else {
-          display.fillScreen(BLACK);
-          display.setCursor(1,1);
-          display.println("Folder successfully deleted");
+          dir.close();
+          delay(1500);
         }
-        dir.close();
-        delay(1500);
+        
         handleFolders();
       }
     }
@@ -860,7 +867,7 @@ void mainOptions() {
     break;
   case 6: // Folder
     if (digitalRead(0)==0) {
-      pathLen++;
+      deletingFolder = true;
       deleteFolderMenu();
     } else {
       pathLen++;
