@@ -755,6 +755,7 @@ void makeFolder() {
 void deleteFolderMenu() {
   int deleteCursor = 1;
   int deleteCursorPosX = display.width()/2+2*letterWidth/2+letterWidth;
+  //Displays the delete folder menu
   display.fillScreen(BLACK); 
   display.setCursor(display.width()/2-15*letterWidth/2, display.height()/2-letterHeight*3);
   display.println("Deleting folder");
@@ -762,17 +763,19 @@ void deleteFolderMenu() {
   display.println("Are you sure?");
   display.setCursor(display.width()/2-10*letterWidth/2, display.height()/2);
   display.println("Yes     No");
+  // Handles menu controls
   while (true) {
     M5Cardputer.update();
     if (kb.isChange()) {
       display.setTextColor(BLACK);
       display.drawString(">", deleteCursorPosX, display.height()/2);
-      
+      // "," is pressed, select yes
       if (kb.isKeyPressed(',')) {
         deleteCursor = 0;
         
         deleteCursorPosX = display.width()/2-10*letterWidth/2-letterWidth;
       }
+      // "/" is pressed, select no
       if (kb.isKeyPressed('/')) {
         deleteCursor = 1;
 
@@ -782,21 +785,21 @@ void deleteFolderMenu() {
       display.setTextColor(PURPLE);
       display.drawString(">", deleteCursorPosX, display.height()/2);
 
+      // Cursor is on yes ("0"), attempt to delete folder
       if (kb.isKeyPressed(KEY_ENTER)) {
         if (deleteCursor == 0) {
           String folderPath = path + "/" + sdFiles[mainCursor];
           File dir = SD.open(folderPath);
-          
+          // The folders have files inside, try to delete them
           if (!SD.rmdir(folderPath)){
             while (true) {
               File folderFile =  dir.openNextFile();
-              if (!folderFile) {
-                // no more files
-                if (SD.rmdir(folderPath)) {
+              if (!folderFile) { // No more files
+                if (SD.rmdir(folderPath)) { // All files have been removed, delete folder
                   display.fillScreen(BLACK);
                   display.setCursor(1,1);
                   display.println("Folder successfully deleted");
-                } else {
+                } else { // The folder couldn't be removed for some unknown reason
                   display.fillScreen(BLACK);
                   display.setCursor(1,1);
                   display.println("Folder couldn't be deleted");
@@ -807,13 +810,15 @@ void deleteFolderMenu() {
               }
               
               String folderFileName = folderFile.name();
+              // If the file is a directory stop the function and let the user remove it manually
+              // This is done because I haven't implemented recursive file/folder deletion
               if (folderFile.isDirectory()) {
                 display.fillScreen(BLACK);
                 display.setCursor(1,1);
                 display.println("Remove folders first");
                 mainCursor = 0;
                 break;
-              } else {
+              } else { // The file couldn't be removed for some unknown reason
                 if (!SD.remove(folderPath + "/" + folderFileName)) {
                   display.fillScreen(BLACK);
                   display.setCursor(1,1);
@@ -821,7 +826,7 @@ void deleteFolderMenu() {
                 }
               }
             }
-          } else {
+          } else { // If the folder doesn't have any files inside, delete it
             display.fillScreen(BLACK);
             display.setCursor(1,1);
             display.println("Folder successfully deleted");
@@ -829,8 +834,9 @@ void deleteFolderMenu() {
           dir.close();
           delay(1500);
         }
-        
+        // Return to current folder
         handleFolders();
+        break;
       }
     }
   }
@@ -866,6 +872,7 @@ void mainOptions() {
     handleMenus(scriptOptionsAmount-1, scriptOptions, scriptCursor, scriptMenuOptions, true);
     break;
   case 6: // Folder
+    // If G0 button is pressed show delete folder menu
     if (digitalRead(0)==0) {
       deletingFolder = true;
       deleteFolderMenu();
