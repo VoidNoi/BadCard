@@ -307,7 +307,11 @@ void processLine(String line) {
    *
    */
   
-  int space = line.indexOf(' ');  // Find the first 'space' that'll be used to separate the payload from the command
+    display.setCursor(display.width()/2-line.length()/2*letterWidth, display.height()-letterWidth*2);
+    display.setTextColor(PURPLE);
+    display.println(line);
+
+    int space = line.indexOf(' ');  // Find the first 'space' that'll be used to separate the payload from the command
   String command = "";
   String payload = "";
   
@@ -395,6 +399,11 @@ void processLine(String line) {
     // Invalid command
   }
 
+  
+  display.setCursor(display.width()/2-line.length()/2*letterWidth, display.height()-letterWidth*2);
+  display.setTextColor(BLACK);
+  display.println(line);
+  
   if (isBLE) {
     BLEKeyboard.releaseAll();
   } else {
