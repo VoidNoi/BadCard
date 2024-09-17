@@ -21,6 +21,7 @@ USBHIDKeyboard Keyboard;
 #include "src/USBHID-Keyboard/KeyboardLayout_BR.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_GB.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_NO.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_JP.h"
 
 KeyboardLayout *layout;
 
@@ -682,6 +683,9 @@ void setKBLayout(int layoutNum) {
       break;
     case 11:
       layout = new KeyboardLayout_NO();
+      break;
+    case 12:
+      layout = new KeyboardLayout_JP();
       break;
   }
 }
