@@ -20,12 +20,12 @@
 #define AMOUNT_OF_SPECIAL_CHARS 9
 
 extern const char16_t KeyboardLayout_pt_BR_special_characters[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
-  u'º',
+  u'º', // Doesn't work
   u'¨',
   u'´',
   u'ç',
   u'~',
-  u'ª',
+  u'ª', // Doesn't work
   u'`',
   u'Ç',
   u'^'
@@ -93,7 +93,7 @@ extern const uint8_t KeyboardLayout_pt_BR[128] PROGMEM =
   0x10,          // ,
   0x2d,          // -
   0x36,          // .
-  0x38,          // /
+  0x14|ALT_GR,   // /
   0x27,          // 0
   0x1e,          // 1
   0x1f,          // 2
@@ -104,12 +104,12 @@ extern const uint8_t KeyboardLayout_pt_BR[128] PROGMEM =
   0x24,          // 7
   0x25,          // 8
   0x26,          // 9
-  0x37|SHIFT,    // :
-  0x37,          // ;
-  0x10|SHIFT,    // <
+  0x38|SHIFT,    // :
+  0x38,          // ;
+  0x36|SHIFT,    // <
   0x2e,          // =
-  0x36|SHIFT,    // >
-  0x38|SHIFT,    // ?
+  0x37|SHIFT,    // >
+  0x1a|ALT_GR,   // ?
   0x1f|SHIFT,    // @
   0x04|SHIFT,    // A
   0x05|SHIFT,    // B
