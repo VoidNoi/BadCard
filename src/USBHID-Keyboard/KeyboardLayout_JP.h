@@ -9,17 +9,17 @@
 //Additional keys
 #define KEY_J_YEN (136+0x89)
 
-#define AMOUNT_OF_SPECIAL_CHARS 2
+#define AMOUNT_OF_SPECIAL_CHARS 1
 
-extern const char16_t KeyboardLayout_en_JP_special_characters[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
+extern const char16_t KeyboardLayout_ja_JP_special_characters[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
   u'¥',
 };
 
-extern const uint16_t KeyboardLayout_en_JP_special_keycodes[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
+extern const uint16_t KeyboardLayout_ja_JP_special_keycodes[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
   KEY_J_YEN
 };
 
-extern const uint8_t KeyboardLayout_en_JP[128] PROGMEM{
+extern const uint8_t KeyboardLayout_ja_JP[128] PROGMEM{
     0x00, // NUL
     0x00, // SOH
     0x00, // STX
@@ -158,7 +158,7 @@ public:
     ~KeyboardLayout_JP(){};
     const uint8_t *getKeymap()
     {
-        return KeyboardLayout_en_JP;
+        return KeyboardLayout_ja_JP;
     }
     /**
      * @brief Returns the keycode for the given key
@@ -180,7 +180,7 @@ public:
 
         if (key < 128)
         {
-            return KeyboardLayout_en_JP[key];
+            return KeyboardLayout_ja_JP[key];
         }
         // Could not match code
         return 0;
@@ -189,9 +189,9 @@ public:
     {
         uint16_t keycode = 0;
         
-        if (key == KeyboardLayout_en_JP_special_characters[0])
+        if (key == KeyboardLayout_ja_JP_special_characters[0])
         {
-            keycode = KeyboardLayout_en_JP_special_keycodes[0];
+            keycode = KeyboardLayout_ja_JP_special_keycodes[0];
         }
 
         return keycode;
