@@ -21,6 +21,7 @@ USBHIDKeyboard Keyboard;
 #include "src/USBHID-Keyboard/KeyboardLayout_BR.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_GB.h"
 #include "src/USBHID-Keyboard/KeyboardLayout_NO.h"
+#include "src/USBHID-Keyboard/KeyboardLayout_JP.h"
 
 KeyboardLayout *layout;
 
@@ -36,10 +37,6 @@ BleKeyboard BLEKeyboard("GoodCard :)", "VoidNoi", 100);
 #define display M5Cardputer.Display
 #define kb M5Cardputer.Keyboard
 
-// The almighty doesn't want kbLayoutsLen and KbLayouts initialization to be below maxFiles for some reason
-// so don't you dare move it or the keyboard layouts menu will be bugged
-const int kbLayoutsLen = 13; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
-String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO"};
 
 const int maxFiles = 100;
 
@@ -62,6 +59,10 @@ int fileType[maxFiles] = {1, 2, 3, 4};
 
 const int scriptOptionsAmount = 3;
 String scriptMenuOptions[scriptOptionsAmount] = {"Execute script", "Edit script", "Delete script"};
+// The almighty doesn't want kbLayoutsLen and KbLayouts initialization to be below maxFiles for some reason
+// so don't you dare move it or the keyboard layouts menu will be bugged
+const int kbLayoutsLen = 14; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
+String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO", "ja_JP"};
 
 const int ELEMENT_COUNT_MAX = 500;
 String fileText[ELEMENT_COUNT_MAX];
@@ -682,6 +683,9 @@ void setKBLayout(int layoutNum) {
       break;
     case 11:
       layout = new KeyboardLayout_NO();
+      break;
+    case 12:
+      layout = new KeyboardLayout_JP();
       break;
   }
 }
