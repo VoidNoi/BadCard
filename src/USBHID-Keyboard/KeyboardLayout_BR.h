@@ -90,9 +90,9 @@ extern const uint8_t KeyboardLayout_pt_BR[128] PROGMEM =
   0x27|SHIFT,    // )
   0x25|SHIFT,    // *
   0x2e|SHIFT,    // +
-  0x10,          // ,
+  0x36,          // ,
   0x2d,          // -
-  0x36,          // .
+  0x37,          // .
   0x14|ALT_GR,   // /
   0x27,          // 0
   0x1e,          // 1
