@@ -24,11 +24,14 @@ USBHIDKeyboard Keyboard;
 #include "src/USBHID-Keyboard/KeyboardLayout_JP.h"
 
 KeyboardLayout *layout;
+const uint8_t *bleLayout;
 
 int currentKBLayout = 0;
 
 // https://github.com/T-vK/ESP32-BLE-Keyboard
 #include "src/BLE-Keyboard/BleKeyboard.h"
+
+
 BleKeyboard BLEKeyboard("GoodCard :)", "VoidNoi", 100);
 
 #include <SPI.h>
@@ -228,6 +231,8 @@ void executeScript() {
     if (!isBLE) {
       USB.begin();
       Keyboard.begin(layout);
+    }else {
+      BLEKeyboard.setLayout(bleLayout);
     }
 
     delay(1000);
@@ -650,42 +655,55 @@ void setKBLayout(int layoutNum) {
   switch (layoutNum) {
     case 0:
       layout = new KeyboardLayout_US();
+      bleLayout = _asciimap;
       break;
     case 1:
       layout = new KeyboardLayout_ES();
+      bleLayout = _asciimap;
       break;
     case 2:
       layout = new KeyboardLayout_DE();
+      bleLayout = _asciimap;
       break;
     case 3:
       layout = new KeyboardLayout_PT();
+      bleLayout = _ptptmap;
       break;
     case 4:
       layout = new KeyboardLayout_FR();
+      bleLayout = _asciimap;
       break;
     case 5:
       layout = new KeyboardLayout_SE();
+      bleLayout = _asciimap;
       break;
     case 6:
       layout = new KeyboardLayout_IT();
+      bleLayout = _asciimap;
       break;
     case 7:
       layout = new KeyboardLayout_HU();
+      bleLayout = _asciimap;
       break;
     case 8:
       layout = new KeyboardLayout_DK();
+      bleLayout = _asciimap;
       break;
     case 9:
       layout = new KeyboardLayout_BR();
+      bleLayout = _asciimap;
       break;
     case 10:
       layout = new KeyboardLayout_GB();
+      bleLayout = _asciimap;
       break;
     case 11:
       layout = new KeyboardLayout_NO();
+      bleLayout = _asciimap;
       break;
     case 12:
       layout = new KeyboardLayout_JP();
+      bleLayout = _asciimap;
       break;
   }
 }
@@ -969,6 +987,7 @@ void getLang() {
     langFile.print("0");
     langFile.close();
     layout = new KeyboardLayout_US();
+    bleLayout = _asciimap;
   }
 }
 

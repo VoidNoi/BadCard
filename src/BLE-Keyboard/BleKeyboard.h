@@ -1,6 +1,11 @@
 // uncomment the following line to use NimBLE library
 #define USE_NIMBLE
 
+#pragma once
+#include <Arduino.h>
+#include "BleKeyboardLayout_US.h"
+#include "BleKeyboardLayout_PTPT.h"
+
 #ifndef ESP32_BLE_KEYBOARD_H
 #define ESP32_BLE_KEYBOARD_H
 #include "sdkconfig.h"
@@ -91,6 +96,7 @@ private:
   std::string        deviceName;
   std::string        deviceManufacturer;
   uint8_t            batteryLevel;
+  const uint8_t*     _asciimapLayout;
   bool               connected = false;
   uint32_t           _delay_ms = 7;
   void delay_ms(uint64_t ms);
@@ -117,6 +123,7 @@ public:
   void setBatteryLevel(uint8_t level);
   void setName(std::string deviceName);  
   void setDelay(uint32_t ms);
+  void setLayout(const uint8_t* layout);
 
   void set_vendor_id(uint16_t vid);
   void set_product_id(uint16_t pid);
