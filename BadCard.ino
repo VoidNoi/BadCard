@@ -9,19 +9,19 @@
 // https://gitlab.com/DJPX/advanced-keyboard-support-arduino
 #include "src/USBHID-Keyboard/USBHIDKeyboard.h"
 USBHIDKeyboard Keyboard;
-#include "src/USBHID-Keyboard/KeyboardLayout_ES.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_DE.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_US.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_PT.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_FR.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_SE.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_IT.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_HU.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_DK.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_BR.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_GB.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_NO.h"
-#include "src/USBHID-Keyboard/KeyboardLayout_JP.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_ES.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_DE.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_US.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_PT.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_FR.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_SE.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_IT.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_HU.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_DK.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_BR.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_GB.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_NO.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_JP.h"
 
 KeyboardLayout *layout;
 

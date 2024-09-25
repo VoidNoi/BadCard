@@ -10,6 +10,8 @@
 
 #include "NimBLECharacteristic.h"
 #include "NimBLEHIDDevice.h"
+#include "../Keyboard-Layouts/KeyboardLayout.h"
+#include "../Keyboard-Layouts/KeyboardLayout_US.h"
 
 #define BLEDevice                  NimBLEDevice
 #define BLEServerCallbacks         NimBLEServerCallbacks

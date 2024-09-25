@@ -26,8 +26,8 @@
 
 #include "esp_event.h"
 // Default keyboardlayout
-#include "KeyboardLayout.h"
-#include "KeyboardLayout_US.h"
+#include "../Keyboard-Layouts/KeyboardLayout.h"
+#include "../Keyboard-Layouts/KeyboardLayout_US.h"
 
 ESP_EVENT_DECLARE_BASE(ARDUINO_USB_HID_KEYBOARD_EVENTS);
 
