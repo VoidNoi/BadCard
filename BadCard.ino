@@ -728,7 +728,7 @@ void handleFolders() {
 
     sdFiles[0] = "NEW SCRIPT";
     sdFiles[1] = "NEW FOLDER";
-    sdFiles[2] = "ACTIVATE BLE";
+    sdFiles[2] = isBLE ? "BLE ACTIVATED":"ACTIVATE BLE";
     sdFiles[3] = "KB LAYOUT";
 
     fileType[0] = 1;
