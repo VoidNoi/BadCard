@@ -228,6 +228,8 @@ void executeScript() {
     if (!isBLE) {
       USB.begin();
       Keyboard.begin(layout);
+    } else {
+      BLEKeyboard.setLayout(layout);
     }
 
     delay(1000);
