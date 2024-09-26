@@ -989,6 +989,7 @@ void setup() {
   if (!SD.exists(root)) {
     SD.mkdir(root);
   }
+  BLEKeyboard.setDelay(15);
   display.setRotation(1);
   display.setTextColor(PURPLE);
   
