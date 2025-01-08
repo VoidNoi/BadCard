@@ -82,7 +82,6 @@ String fileName;
 
 bool creatingFile = false;
 bool editingFile = false;
-bool saveFile = false;
 bool isBLE = false;
 bool showIcons = false;
 
@@ -267,7 +266,7 @@ void executeScript() {
       } else {
         Keyboard.end();
       }
-      handleFolders();
+      return;
     } 
 }
 
@@ -544,7 +543,6 @@ void cleanNewFile() {
 }
 
 void saveFileChanges() {
-  saveFile = false;
 
   myFile = SD.open(path + "/" + fileName + ".txt", FILE_WRITE);
   if (myFile) {
@@ -565,14 +563,15 @@ void saveFileChanges() {
     }
 
     myFile.close();
-    handleFolders();
+    return;
   } else {
     display.println("File didn't open");
     myFile.close();
     delay(2000);
-    handleFolders();
+    return;
   }
 }
+
 
 void editFile() {
   // Open the file for reading
@@ -607,15 +606,16 @@ void editFile() {
   }
   display.setCursor(1, 1);
   editingFile = true;
+  fileWrite();
 }
 
 void newFile() {
   fileName = '\0';
   cleanNewFile();
-  saveFile = false;
   display.fillScreen(BLACK);
   display.setCursor(1,1);
   creatingFile = true;
+  fileWrite();
 }
 
 void deleteScript() {
@@ -632,7 +632,7 @@ void deleteScript() {
     display.println("Script couldn't be deleted");
     delay(1000);
   }
-  handleFolders();
+  return;
 }
 
 void scriptOptions() {
@@ -698,7 +698,7 @@ void kbLayoutsOptions() {
   
   setLang(currentKBLayout);
 
-  handleFolders();
+  return;
 }
 
 template <typename T> void cleanArray(T array, int length) {
@@ -709,42 +709,45 @@ template <typename T> void cleanArray(T array, int length) {
 }
 
 void handleFolders() {
-  if (pathArray[pathLen] != root) {
-    fileAmount = 3;
-    if (mainCursor > 2 && fileType[scriptCursor] < 8 && !deletingFolder) {
-      pathArray[pathLen] = "/" + sdFiles[mainCursor];
+  display.setTextSize(2);
+  while(true) {
+    if (pathArray[pathLen] != root) {
+      fileAmount = 3;
+      if (mainCursor > 2 && fileType[scriptCursor] < 8 && !deletingFolder) {
+        pathArray[pathLen] = "/" + sdFiles[mainCursor];
+      }
+      getCurrentPath();
+      sdFiles[0] = "..";
+      sdFiles[1] = "NEW SCRIPT";
+      sdFiles[2] = "NEW FOLDER";
+      fileType[0] = 7;
+      fileType[1] = 1;
+      fileType[2] = 2;
+    } else {
+      fileAmount = 4;
+      path = root;
+      pathLen = 0;
+      
+      sdFiles[0] = "NEW SCRIPT";
+      sdFiles[1] = "NEW FOLDER";
+      sdFiles[2] = isBLE ? "BLE ACTIVATED":"ACTIVATE BLE";
+      sdFiles[3] = "KB LAYOUT";
+      
+      fileType[0] = 1;
+      fileType[1] = 2;
+      fileType[2] = 3;
+      fileType[3] = 4;
     }
-    getCurrentPath();
-    sdFiles[0] = "..";
-    sdFiles[1] = "NEW SCRIPT";
-    sdFiles[2] = "NEW FOLDER";
-    fileType[0] = 7;
-    fileType[1] = 1;
-    fileType[2] = 2;
-  } else {
-    fileAmount = 4;
-    path = root;
-    pathLen = 0;
-
-    sdFiles[0] = "NEW SCRIPT";
-    sdFiles[1] = "NEW FOLDER";
-    sdFiles[2] = isBLE ? "BLE ACTIVATED":"ACTIVATE BLE";
-    sdFiles[3] = "KB LAYOUT";
-
-    fileType[0] = 1;
-    fileType[1] = 2;
-    fileType[2] = 3;
-    fileType[3] = 4;
+    
+    getDirectory(path, fileAmount, sdFiles, fileType);
+    // Empties an extra value at the end to prevent previous files from appearing in the menu
+    sdFiles[fileAmount] = '\0';
+    fileType[fileAmount] = '\0';
+    
+    mainCursor = 0;
+    deletingFolder = false;
+    handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
   }
-
-  getDirectory(path, fileAmount, sdFiles, fileType);
-  // Empties an extra value at the end to prevent previous files from appearing in the menu
-  sdFiles[fileAmount] = '\0';
-  fileType[fileAmount] = '\0';
-
-  mainCursor = 0;
-  deletingFolder = false;
-  handleMenus(fileAmount-1, mainOptions, mainCursor, sdFiles, true);
 }
 
 void newFolder() {
@@ -756,15 +759,13 @@ void newFolder() {
   display.setCursor(display.width()/2-(12/2)*letterWidth, 0);
   display.println("Folder Name:");
   display.drawString(fileName, display.width()/2-(fileName.length()/2)*letterWidth, letterHeight);
-  saveFile = true;
+  saveFile();
 }
 
 void makeFolder() {
-  saveFile = false;
-
   getCurrentPath();
   SD.mkdir(path + "/" + fileName);
-  handleFolders();
+  return;
 }
 
 void deleteFolderMenu() {
@@ -850,8 +851,8 @@ void deleteFolderMenu() {
           delay(1500);
         }
         // Return to current folder
-        handleFolders();
-        break;
+        return;
+        //break;
       }
     }
   }
@@ -875,7 +876,6 @@ void mainOptions() {
       isBLE = false;
       sdFiles[1] = "ACTIVATE BLE";
     }
-    handleFolders();
     break;
   case 4: // Keyboard Layouts
     handleMenus(kbLayoutsLen-2, kbLayoutsOptions, kbLayoutsCursor, kbLayouts, false); // We remove 1 more than the others from kbLayoutsLen to compensate for the extra 1 added at declaration
@@ -893,15 +893,14 @@ void mainOptions() {
       deleteFolderMenu();
     } else {
       pathLen++;
-      handleFolders();
     }
     break;
   case 7: // Previous folder
     sdFiles[pathLen] = '\0';
     pathLen--;
-    handleFolders();
     break;
   }
+  return;
 }
 
 void bootLogo(){
@@ -935,7 +934,6 @@ void bootLogo(){
     M5Cardputer.update();
     if (kb.isChange()) {
       delay(100);
-      handleFolders();
       break;
     }
   }
@@ -996,44 +994,50 @@ void setup() {
   getLang();
 
   bootLogo();
+  handleFolders();
 }
 
-void loop() {
-  M5Cardputer.update();
-
-  if (saveFile) {
+void saveFile() {
+  while(true) {
+    M5Cardputer.update();
     if (kb.isChange()) {
       if (kb.isPressed()) {
         Keyboard_Class::KeysState status = kb.keysState();
-
+        
         for (auto i : status.word) {
           fileName += i;
         }
-
+        
         if (status.del) {
           fileName.remove(fileName.length() - 1);  
         }
         
         display.fillScreen(BLACK);
-
+        
         String newFileName = fileType[mainCursor] == 2 ? "Folder Name:" : "File Name:";
-
+        
         display.setCursor(display.width()/2-(newFileName.length()/2)*letterWidth, 0);
         display.println(newFileName);
         display.drawString(fileName, display.width()/2-(fileName.length()/2)*letterWidth, letterHeight);
-
+        
         if (status.enter) {
           if (fileType[mainCursor] == 2) {
             makeFolder();
           } else {
             saveFileChanges();
           }
+          break;
         }
       }
     }
   }
+  return;
+}
 
-  if (creatingFile || editingFile) {
+
+void fileWrite() {
+  while(true) {
+    M5Cardputer.update();
     if (kb.isChange()) {
       if (kb.isPressed()) {
         Keyboard_Class::KeysState status = kb.keysState();
@@ -1043,14 +1047,16 @@ void loop() {
           if (creatingFile) {
             fileName = "\0";
             creatingFile = false;
-            saveFile = true;
+            saveFile();
+            break;
           }
           if (editingFile) {
             String fullName = fileName;
             fullName.remove(fullName.length()-4);
             fileName = fullName;
             editingFile = false;
-            saveFile = true;
+            saveFile();
+            break;
           }
         } else if (status.fn && kb.isKeyPressed(';') && cursorPosY > 0) {
           prevCursorY = cursorPosY;
@@ -1170,4 +1176,8 @@ void loop() {
       }
     }
   }
+  return;
+}
+
+void loop() {
 } 
