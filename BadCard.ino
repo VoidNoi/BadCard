@@ -852,7 +852,6 @@ void deleteFolderMenu() {
         }
         // Return to current folder
         return;
-        //break;
       }
     }
   }
@@ -904,37 +903,137 @@ void mainOptions() {
 }
 
 void bootLogo(){
-
-  display.fillScreen(BLACK);
   
-  display.setTextSize(2);
-  String BCVersion = "BadCard v1.7.1";
+  M5Canvas backgroundSprite(&display);
+  M5Canvas versionSprite(&display);
+  M5Canvas logoSprite(&display);
+  M5Canvas fwNameSprite(&display);
+  M5Canvas pressKeySprite(&display);
 
-  display.setCursor(display.width()/2-(BCVersion.length()/2)*letterWidth, display.height()/2 - 50);
-  display.println(BCVersion);
+  unsigned long t;
 
-  display.setTextSize(1);
-  display.setCursor(display.width()/2 - 90, display.height()/2 - 25);
-  display.println(" __   __     ______     __    ");
-  display.setCursor(display.width()/2 - 90, display.height()/2 - 15);
-  display.println("/\\\ \"-.\\ \\   /\\  __ \\   /\\ \\   ");
-  display.setCursor(display.width()/2 - 90, display.height()/2 - 5);
-  display.println("\\ \\ \\-.  \\  \\ \\ \\/\\ \\  \\ \\ \\  ");
-  display.setCursor(display.width()/2 - 90, display.height()/2 + 5);
-  display.println(" \\ \\_\\\\\"\\_\\  \\ \\_____\\  \\ \\_\\ ");
-  display.setCursor(display.width()/2 - 90, display.height()/2 + 15);
-  display.println("  \\/_/ \\/_/   \\/_____/   \\/_/ ");
+  t = millis();
 
-  display.setTextSize(2);
+  char version[] = "v1.7.1";
+  int versionLength = sizeof(version)-1;
+  int versionWidth = versionLength*letterWidth/2+3;
+  int versionHeight = letterHeight/2+2;
 
-  display.setCursor(display.width()/2 - 95, display.height()/2 + 40);
-  display.println("Press any key...");
+  char fwName[] = "BadCard";
+  int fwNameLength = sizeof(fwName)-1;
+  double fwNamePosX = fwNameLength % 2 == 1 ? (display.width()/2-letterWidth/2)-(fwNameLength/2)*letterWidth : display.width()/2-(fwNameLength/2)*letterWidth;
+  //int fwNamePosY = display.height()/2 - 50;
+  int fwNamePosY = letterHeight/2;
+  
+  char pressKeyText[] = "Press any key...";
+  int pressKeyTextLength = sizeof(pressKeyText)-1;
+  int pressKeyPosX = display.width()/2 - 95;
+  //int pressKeyPosY = display.height()/2 + 40;
+  int pressKeyPosY = display.height() - letterHeight-4;
+  
+  int offset = 8;
+  
+  backgroundSprite.createSprite(display.width()+letterWidth*2, display.height());
+  versionSprite.createSprite(versionWidth, versionHeight);
+  logoSprite.createSprite(display.width()/2 + 70, display.height()/2-10);
+  fwNameSprite.createSprite(fwNameLength*letterWidth+10, letterHeight+10);
+  pressKeySprite.createSprite(pressKeyTextLength*letterWidth+10, letterHeight+10);
 
+  int move = 0;
+  int mosaicSpriteSize = letterWidth*2.5; // Change the number to adjust the distance between the mosaic's sprites
+    
   while(true) {
+    //Background animation loop
+    backgroundSprite.setTextSize(2);
+    backgroundSprite.fillSprite(BLACK);
+    for(int x = 0; x < 15; x++) {
+      for (int y = 0; y < 15; y++) {
+        //Use a character
+        //backgroundSprite.setCursor(x*letterWidth*1.5-move, y*letterWidth*1.5-move);
+        //backgroundSprite.setTextColor(0x5c0a5cU);
+        //backgroundSprite.println("+");
+
+        //Or use an image
+        backgroundSprite.setSwapBytes(true);
+        backgroundSprite.pushImage(x*mosaicSpriteSize-move, y*mosaicSpriteSize-move, 16, 16, (uint16_t *)icons[8]);
+      }
+    }
+    for (int x = 0; x <= display.width()+letterWidth; x++) {
+      for (int y = 0; y <= display.height(); y++) {
+        if (x % 2 == 0 || y % 2 == 0) {
+          backgroundSprite.drawPixel(x, y, BLACK);
+        }
+      }
+    }
+
+    if (move >= mosaicSpriteSize) {
+      move = 0;
+    }
+    //Slow down animation
+    if (millis() -t >= 80) {
+      move++;
+      t = millis();
+    }
+
+    //Prints logo
+    logoSprite.setTextSize(1);
+    logoSprite.setTextColor(PURPLE);
+    logoSprite.drawLine(1, 1, 1, display.height()/2-12, PURPLE);
+    logoSprite.drawLine(1, display.height()/2-12, display.width()/2+60+offset, display.height()/2-12, PURPLE);
+    logoSprite.drawLine(display.width()/2+60 + offset, display.height()/2-12, display.width()/2+68, 1, PURPLE);
+    logoSprite.drawLine(display.width()/2+60 + offset, 1, 1, 1, PURPLE);
+    logoSprite.setCursor(offset, 2);
+    logoSprite.println(" __   __     ______     __    ");
+    logoSprite.setCursor(offset, 12);
+    logoSprite.println("/\\\ \"-.\\ \\   /\\  __ \\   /\\ \\   ");
+    logoSprite.setCursor(offset, 22);
+    logoSprite.println("\\ \\ \\-.  \\  \\ \\ \\/\\ \\  \\ \\ \\  ");
+    logoSprite.setCursor(offset, 32);
+    logoSprite.println(" \\ \\_\\\\\"\\_\\  \\ \\_____\\  \\ \\_\\ ");
+    logoSprite.setCursor(offset, 42);
+    logoSprite.println("  \\/_/ \\/_/   \\/_____/   \\/_/ ");
+    
+    //Prints version
+    versionSprite.setTextSize(1);
+    versionSprite.setTextColor(PURPLE);
+    versionSprite.setCursor(0, 0);
+    versionSprite.drawLine(0, versionHeight-2, versionWidth-2, versionHeight-2, PURPLE);
+    versionSprite.drawLine(versionWidth-2, versionHeight-2, versionWidth-2, 0, PURPLE);
+    versionSprite.println(version);
+    
+    //Prints firmware name
+    fwNameSprite.setTextSize(2);
+    fwNameSprite.setTextColor(PURPLE);
+    fwNameSprite.setCursor(offset-2, offset-2);
+    fwNameSprite.drawLine(1, 1, 1, letterHeight+offset, PURPLE);
+    fwNameSprite.drawLine(1, letterHeight+offset, fwNameLength*letterWidth+offset, letterHeight+offset, PURPLE);
+    fwNameSprite.drawLine(fwNameLength*letterWidth+offset, letterHeight+offset, fwNameLength*letterWidth+offset, 1, PURPLE);
+    /* fwNameSprite.drawLine(fwNameLength*letterWidth+offset, 1, 1, 1, PURPLE); */
+    fwNameSprite.println(fwName);
+    
+    //Prints press any key
+    pressKeySprite.setTextSize(2);
+    pressKeySprite.setTextColor(PURPLE);
+    pressKeySprite.setCursor(offset-2, offset-2);
+    pressKeySprite.drawLine(1, 1, 1, letterHeight+offset, PURPLE);
+    /* pressKeySprite.drawLine(1, letterHeight+offset, pressKeyTextLength*letterWidth+offset, letterHeight+offset, PURPLE); */
+    pressKeySprite.drawLine(pressKeyTextLength*letterWidth+offset, letterHeight+offset, pressKeyTextLength*letterWidth+offset, 1, PURPLE);
+    pressKeySprite.drawLine(pressKeyTextLength*letterWidth+offset, 1, 1, 1, PURPLE);
+    pressKeySprite.println(pressKeyText);
+    
+    // Pushes the sprites onto the canvas
+    versionSprite.pushSprite(&backgroundSprite, letterWidth, 0);
+    logoSprite.pushSprite(&backgroundSprite, display.width()/2 - 95 + letterWidth, display.height()/2 - 30);
+    fwNameSprite.pushSprite(&backgroundSprite, fwNamePosX + letterWidth-5, fwNamePosY-10);
+    pressKeySprite.pushSprite(&backgroundSprite, pressKeyPosX + letterWidth-5, pressKeyPosY-5);
+    backgroundSprite.pushSprite(-letterWidth, 0);
+    
     M5Cardputer.update();
+    
+    // If any key is pressed go to main menu
     if (kb.isChange()) {
       delay(100);
-      break;
+      return;
     }
   }
 }
