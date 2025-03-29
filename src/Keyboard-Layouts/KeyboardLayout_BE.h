@@ -91,49 +91,49 @@ extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
   0x24|SHIFT,    // 7
   0x25|SHIFT,    // 8
   0x26|SHIFT,    // 9
-	0x1e,          // &
+  0x1e,          // &
   0x1e|ALT_GR,   // |
-	0x1f,          // é
+  0x1f,          // é
   0x1f|ALT_GR,   // @
-	0x20,          // "
+  0x20,          // "
   0x20|ALT_GR,   // #
-	0x21,          // '
-	0x22,          // (
-	0x23,          // §
+  0x21,          // '
+  0x22,          // (
+  0x23,          // §
   0x23|ALT_GR,   // ^
-	0x24,          // è
-	0x25,          // !
-	0x26,          // ç
+  0x24,          // è
+  0x25,          // !
+  0x26,          // ç
   0x26|ALT_GR,   // {
-	0x27,          // à
+  0x27,          // à
   0x27|ALT_GR,   // }
-	0x2d,          // )
+  0x2d,          // )
   0x2d|SHIFT,    // °
-	0x2e,          // -
+  0x2e,          // -
   0x2e|SHIFT,    // _
-								 
+                 
   0x2f|ALT_GR,   // [
-	0x30,          // $
+  0x30,          // $
   0x30|ALT_GR,   // ]
   0x30|SHIFT,    // *
-	0x34,          // ù
-	0x34|SHIFT,    // %
-	0x31,          // µ
-	0x31,SHIFT     // £
-	0x32,          // <
-	0x32|ALT_GR,   // \
-	0x32|SHIFT,    // >
-	0x10,          // ,
-	0x10|SHIFT,    // ?
-	0x36,          // ;
-	0x36|SHIFT,    // .
-	0x37,          // :
-	0x37|SHIFT,    // /
-	0x38,          // =
-	0x38|ALT_GR,   // ~
-	0x38|SHIFT,    // +
+  0x34,          // ù
+  0x34|SHIFT,    // %
+  0x31,          // µ
+  0x31,SHIFT     // £
+  0x32,          // <
+  0x32|ALT_GR,   // \
+  0x32|SHIFT,    // >
+  0x10,          // ,
+  0x10|SHIFT,    // ?
+  0x36,          // ;
+  0x36|SHIFT,    // .
+  0x37,          // :
+  0x37|SHIFT,    // /
+  0x38,          // =
+  0x38|ALT_GR,   // ~
+  0x38|SHIFT,    // +
 
-	0x14,          // a
+  0x14,          // a
   0x05,          // b
   0x06,          // c
   0x07,          // d
@@ -159,7 +159,7 @@ extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
   0x1b,          // x
   0x1c,          // y
   0x1a,          // z
-	0x14|SHIFT,    // A
+  0x14|SHIFT,    // A
   0x05|SHIFT,    // B
   0x06|SHIFT,    // C
   0x07|SHIFT,    // D
@@ -187,7 +187,7 @@ extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
   0x1a|SHIFT,    // Z
 
 
-	0x22|ALT_GR,   // [
+  0x22|ALT_GR,   // [
   0x25|ALT_GR,   // bslash
   0x2d|ALT_GR,   // ]
   0x26|ALT_GR,   // ^
@@ -227,17 +227,17 @@ public:
     // Check if special key is in the map
     if (specialKeyCode != 0)
       {
-	return specialKeyCode;
+  return specialKeyCode;
       }
     // No special key use the normal layout
     else
       {
-	if (key < 128)
-	  {
-	    return KeyboardLayout_fr_BE[key];
-	  }
-	// Could not match code
-	return 0;
+  if (key < 128)
+    {
+      return KeyboardLayout_fr_BE[key];
+    }
+  // Could not match code
+  return 0;
       }
   }
   
@@ -246,24 +246,24 @@ public:
     uint16_t keycode = 0;
     for (int i = 0; i < AMOUNT_OF_SPECIAL_CHARS; i++)
       {
-	Serial.print("Searching key: ");
-	Serial.println(key);
-	Serial.print("Comparing with list: ");
-	Serial.println((char16_t)KeyboardLayout_fr_BE_special_characters[i]);
-	
-	if (key == KeyboardLayout_fr_BE_special_characters[i])
-	  {
-	    Serial.println("Compare keys");
-	    Serial.println(key);
-	    Serial.println((char16_t)KeyboardLayout_fr_BE_special_characters[i]);
-	    Serial.println((char)key);
-	    Serial.println((char)KeyboardLayout_fr_BE_special_characters[i]);
-	    
-	    
-	    keycode = KeyboardLayout_fr_BE_special_keycodes[i];
-	    Serial.println(keycode);
-	    break;
-	  }
+  Serial.print("Searching key: ");
+  Serial.println(key);
+  Serial.print("Comparing with list: ");
+  Serial.println((char16_t)KeyboardLayout_fr_BE_special_characters[i]);
+  
+  if (key == KeyboardLayout_fr_BE_special_characters[i])
+    {
+      Serial.println("Compare keys");
+      Serial.println(key);
+      Serial.println((char16_t)KeyboardLayout_fr_BE_special_characters[i]);
+      Serial.println((char)key);
+      Serial.println((char)KeyboardLayout_fr_BE_special_characters[i]);
+      
+      
+      keycode = KeyboardLayout_fr_BE_special_keycodes[i];
+      Serial.println(keycode);
+      break;
+    }
       }
     return keycode;
   }
