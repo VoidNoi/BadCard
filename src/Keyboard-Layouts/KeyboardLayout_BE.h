@@ -185,29 +185,16 @@ extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
   0x1b|SHIFT,    // X
   0x1c|SHIFT,    // Y
   0x1a|SHIFT,    // Z
-
-
-  0x22|ALT_GR,   // [
-  0x25|ALT_GR,   // bslash
-  0x2d|ALT_GR,   // ]
-  0x26|ALT_GR,   // ^
-  0x25,          // _
-  0x24|ALT_GR,   // `
-
-  0x21|ALT_GR,   // {
-  0x23|ALT_GR,   // |
-  0x2e|ALT_GR,   // }
-  0x1f|ALT_GR,   // ~
   0x00           // DEL
 };
 
-class KeyboardLayout_FR : public KeyboardLayout
+class KeyboardLayout_BE : public KeyboardLayout
 {
 public:
-  KeyboardLayout_FR()
+  KeyboardLayout_BE()
     {
     }
-  ~KeyboardLayout_FR(){};
+  ~KeyboardLayout_BE(){};
   const uint8_t *getKeymap()
   {
     return KeyboardLayout_fr_BE;
