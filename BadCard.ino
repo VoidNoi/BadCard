@@ -918,7 +918,7 @@ void bootLogo(){
 
   t = millis();
 
-  char version[] = "v1.7.1";
+  char version[] = "v1.7.2";
   int versionLength = sizeof(version)-1;
   int versionWidth = versionLength*letterWidth/2+3;
   int versionHeight = letterHeight/2+2;
