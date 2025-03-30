@@ -978,10 +978,10 @@ void bootLogo(){
     //Prints logo
     logoSprite.setTextSize(1);
     logoSprite.setTextColor(PURPLE);
-    logoSprite.drawLine(1, 1, 1, display.height()/2-12, PURPLE);
-    logoSprite.drawLine(1, display.height()/2-12, display.width()/2+60+offset, display.height()/2-12, PURPLE);
-    logoSprite.drawLine(display.width()/2+60 + offset, display.height()/2-12, display.width()/2+68, 1, PURPLE);
-    logoSprite.drawLine(display.width()/2+60 + offset, 1, 1, 1, PURPLE);
+    /* logoSprite.drawLine(1, 1, 1, display.height()/2-12, PURPLE); */
+    /* logoSprite.drawLine(1, display.height()/2-12, display.width()/2+60+offset, display.height()/2-12, PURPLE); */
+    /* logoSprite.drawLine(display.width()/2+60 + offset, display.height()/2-12, display.width()/2+68, 1, PURPLE); */
+    /* logoSprite.drawLine(display.width()/2+60 + offset, 1, 1, 1, PURPLE); */
     logoSprite.setCursor(offset, 2);
     logoSprite.println(" __   __     ______     __    ");
     logoSprite.setCursor(offset, 12);
@@ -1005,9 +1005,9 @@ void bootLogo(){
     fwNameSprite.setTextSize(2);
     fwNameSprite.setTextColor(PURPLE);
     fwNameSprite.setCursor(offset-2, offset-2);
-    fwNameSprite.drawLine(1, 1, 1, letterHeight+offset, PURPLE);
+    /* fwNameSprite.drawLine(1, 1, 1, letterHeight+offset, PURPLE); */
     fwNameSprite.drawLine(1, letterHeight+offset, fwNameLength*letterWidth+offset, letterHeight+offset, PURPLE);
-    fwNameSprite.drawLine(fwNameLength*letterWidth+offset, letterHeight+offset, fwNameLength*letterWidth+offset, 1, PURPLE);
+    /* fwNameSprite.drawLine(fwNameLength*letterWidth+offset, letterHeight+offset, fwNameLength*letterWidth+offset, 1, PURPLE); */
     /* fwNameSprite.drawLine(fwNameLength*letterWidth+offset, 1, 1, 1, PURPLE); */
     fwNameSprite.println(fwName);
     
@@ -1016,7 +1016,7 @@ void bootLogo(){
     pressKeySprite.setTextColor(PURPLE);
     pressKeySprite.setCursor(offset-2, offset-2);
     pressKeySprite.drawLine(1, 1, 1, letterHeight+offset, PURPLE);
-    /* pressKeySprite.drawLine(1, letterHeight+offset, pressKeyTextLength*letterWidth+offset, letterHeight+offset, PURPLE); */
+    pressKeySprite.drawLine(1, letterHeight+offset, pressKeyTextLength*letterWidth+offset, letterHeight+offset, PURPLE);
     pressKeySprite.drawLine(pressKeyTextLength*letterWidth+offset, letterHeight+offset, pressKeyTextLength*letterWidth+offset, 1, PURPLE);
     pressKeySprite.drawLine(pressKeyTextLength*letterWidth+offset, 1, 1, 1, PURPLE);
     pressKeySprite.println(pressKeyText);
