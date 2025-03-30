@@ -22,6 +22,7 @@ USBHIDKeyboard Keyboard;
 #include "src/Keyboard-Layouts/KeyboardLayout_GB.h"
 #include "src/Keyboard-Layouts/KeyboardLayout_NO.h"
 #include "src/Keyboard-Layouts/KeyboardLayout_JP.h"
+#include "src/Keyboard-Layouts/KeyboardLayout_BE.h"
 
 KeyboardLayout *layout;
 
@@ -61,8 +62,8 @@ const int scriptOptionsAmount = 3;
 String scriptMenuOptions[scriptOptionsAmount] = {"Execute script", "Edit script", "Delete script"};
 // The almighty doesn't want kbLayoutsLen and KbLayouts initialization to be below maxFiles for some reason
 // so don't you dare move it or the keyboard layouts menu will be bugged
-const int kbLayoutsLen = 14; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
-String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO", "ja_JP"};
+const int kbLayoutsLen = 15; // Needs 1 more than the amount of layouts to prevent a visual bug in the menu
+String kbLayouts[kbLayoutsLen] = {"en_US", "es_ES", "de_DE", "pt_PT", "fr_FR", "sv_SE", "it_IT", "hu_HU", "da_DK", "pt_BR", "en_GB", "nb_NO", "ja_JP", "fr_BE"};
 
 const int ELEMENT_COUNT_MAX = 500;
 String fileText[ELEMENT_COUNT_MAX];
@@ -688,6 +689,9 @@ void setKBLayout(int layoutNum) {
       break;
     case 12:
       layout = new KeyboardLayout_JP();
+      break;
+    case 13:
+      layout = new KeyboardLayout_BE();
       break;
   }
 }
