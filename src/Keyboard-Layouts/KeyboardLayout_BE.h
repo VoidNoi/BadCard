@@ -16,31 +16,39 @@
 #define KEY_E_GRAVE         (136+0x24)
 #define KEY_C_CEDILLA       (136+0x26)
 #define KEY_A_GRAVE         (136+0x27)
-#define KEY_CIRCUMFLEX      (136+0x2f)
 #define KEY_U_GRAVE         (136+0x34)
+#define KEY_SECTION         (136+0x23)
+#define KEY_MICRO           (136+0x31)
+#define KEY_EURO            (136+0x08)
 
 #define AMOUNT_OF_SPECIAL_CHARS 11
 
 extern const char16_t KeyboardLayout_fr_BE_special_characters[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
   u'²',
+  u'³',
   u'é',
   u'è',
   u'ç',
   u'à',
-  u'^',
   u'ù',
-  u'¨'
+  u'§',
+  u'µ',
+  u'£',
+  u'€',
 };
 
 extern const uint16_t KeyboardLayout_fr_BE_special_keycodes[AMOUNT_OF_SPECIAL_CHARS] PROGMEM = {
   KEY_SUPERSCRIPT_TWO,
+  KEY_SUPERSCRIPT_TWO | U16SHIFT,
   KEY_E_ACUTE,
   KEY_E_GRAVE,
   KEY_C_CEDILLA,
   KEY_A_GRAVE,
-  KEY_CIRCUMFLEX,
   KEY_U_GRAVE,
-  KEY_U_GRAVE | U16SHIFT
+  KEY_SECTION,
+  KEY_MICRO,
+  KEY_MICRO | U16SHIFT,
+  KEY_EURO | U16SHIFT,
 };
 
 extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
@@ -79,6 +87,19 @@ extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
   0x00,          // US
   
   0x2c,          // ' '
+  0x25,          // !
+  0x20,          // "
+  0x20|ALT_GR,   // #
+  0x30,          // $
+  0x34|SHIFT,    // %
+  0x1E,          // &
+  0x21,          // '
+  0x22,          // (
+  0x2d,          // )
+  0x30|SHIFT,    // *
+  0x38|SHIFT,    // +
+  0x10,          // ,
+  0x2e,          // -
   0x36|SHIFT,    // .
   0x37|SHIFT,    // /
   0x27|SHIFT,    // 0
@@ -91,74 +112,13 @@ extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
   0x24|SHIFT,    // 7
   0x25|SHIFT,    // 8
   0x26|SHIFT,    // 9
-  0x1e,          // &
-  0x1e|ALT_GR,   // |
-  0x1f,          // é
-  0x1f|ALT_GR,   // @
-  0x20,          // "
-  0x20|ALT_GR,   // #
-  0x21,          // '
-  0x22,          // (
-  0x23,          // §
-  0x23|ALT_GR,   // ^
-  0x24,          // è
-  0x25,          // !
-  0x26,          // ç
-  0x26|ALT_GR,   // {
-  0x27,          // à
-  0x27|ALT_GR,   // }
-  0x2d,          // )
-  0x2d|SHIFT,    // °
-  0x2e,          // -
-  0x2e|SHIFT,    // _
-                 
-  0x2f|ALT_GR,   // [
-  0x30,          // $
-  0x30|ALT_GR,   // ]
-  0x30|SHIFT,    // *
-  0x34,          // ù
-  0x34|SHIFT,    // %
-  0x31,          // µ
-  0x31,SHIFT     // £
-  0x32,          // <
-  0x32|ALT_GR,   // \
-  0x32|SHIFT,    // >
-  0x10,          // ,
-  0x10|SHIFT,    // ?
-  0x36,          // ;
-  0x36|SHIFT,    // .
   0x37,          // :
-  0x37|SHIFT,    // /
+  0x36,          // ;
+  0x32,          // <
   0x38,          // =
-  0x38|ALT_GR,   // ~
-  0x38|SHIFT,    // +
-
-  0x14,          // a
-  0x05,          // b
-  0x06,          // c
-  0x07,          // d
-  0x08,          // e
-  0x09,          // f
-  0x0a,          // g
-  0x0b,          // h
-  0x0c,          // i
-  0x0d,          // j
-  0x0e,          // k
-  0x0f,          // l
-  0x33,          // m
-  0x11,          // n
-  0x12,          // o
-  0x13,          // p
-  0x04,          // q
-  0x15,          // r
-  0x16,          // s
-  0x17,          // t
-  0x18,          // u
-  0x19,          // v
-  0x1d,          // w
-  0x1b,          // x
-  0x1c,          // y
-  0x1a,          // z
+  0x32|SHIFT,    // >
+  0x10|SHIFT,    // ?
+  0x1f|ALT_GR,   // @
   0x14|SHIFT,    // A
   0x05|SHIFT,    // B
   0x06|SHIFT,    // C
@@ -185,6 +145,42 @@ extern const uint8_t KeyboardLayout_fr_BE[128] PROGMEM =
   0x1b|SHIFT,    // X
   0x1c|SHIFT,    // Y
   0x1a|SHIFT,    // Z
+  0x2f|ALT_GR,   // [
+  0x32|ALT_GR,   // bslash
+  0x30|ALT_GR,   // ]
+  0x23|ALT_GR,   // ^
+  0x2e|SHIFT,    // _
+  0x31|ALT_GR,   // `
+  0x14,          // a
+  0x05,          // b
+  0x06,          // c
+  0x07,          // d
+  0x08,          // e
+  0x09,          // f
+  0x0a,          // g
+  0x0b,          // h
+  0x0c,          // i
+  0x0d,          // j
+  0x0e,          // k
+  0x0f,          // l
+  0x33,          // m
+  0x11,          // n
+  0x12,          // o
+  0x13,          // p
+  0x04,          // q
+  0x15,          // r
+  0x16,          // s
+  0x17,          // t
+  0x18,          // u
+  0x19,          // v
+  0x1d,          // w
+  0x1b,          // x
+  0x1c,          // y
+  0x1a,          // z
+  0x26|ALT_GR,   // {
+  0x1e|ALT_GR,   // |
+  0x27|ALT_GR,   // }
+  0x38|ALT_GR,   // ~
   0x00           // DEL
 };
 
